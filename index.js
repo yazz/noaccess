@@ -33,7 +33,7 @@ var binary              = fs.readFileSync(dbFileName);
 findDataPages()
 
 let tableDefn = getTableDefinitionForPage(defnPage)
-let data = getDataForTableOnPage(defnPage,wholeDb.tableDataPages)
+let data = getDataForTableOnPage(defnPage)
 
 
 let returnItems = {
@@ -603,7 +603,7 @@ function toUTF8Array(input) {
 //
 //
 // -----------------------------------------------------------------------
-function getDataForTableOnPage(pageNum, pageDefns) {
+function getDataForTableOnPage(pageNum) {
     let tableData = []
 
     if (showDebug){
@@ -616,7 +616,7 @@ function getDataForTableOnPage(pageNum, pageDefns) {
         console.log("----------------------------------------------------------------------------------------------------------------")
     }
 
-    let listOfPages = pageDefns[pageNum]
+    let listOfPages = wholeDb.tableDataPages[pageNum]
 
 
 
@@ -680,7 +680,7 @@ function getDataForTableOnPage(pageNum, pageDefns) {
            name: "RecordCount",
            type: "number"
         })
-        let NullFieldBitmapLength = Math.floor((pageDefns[pageNum].__colCount + 7) / 8)
+        let NullFieldBitmapLength = Math.floor((wholeDb.tableDataPages[pageNum].__colCount + 7) / 8)
 
 
         let offsetList = []
@@ -727,11 +727,11 @@ function getDataForTableOnPage(pageNum, pageDefns) {
 
 
 
-        let NumCols = Object.keys(pageDefns[pageNum].colsInOrder).length
-        //console.log(pageDefns[pageNum].colsInOrder)
-        let numFixed = pageDefns[pageNum].__colCount - pageDefns[pageNum].__VariableColumns
+        let NumCols = Object.keys(wholeDb.tableDataPages[pageNum].colsInOrder).length
+        //console.log(wholeDb.tableDataPages[pageNum].colsInOrder)
+        let numFixed = wholeDb.tableDataPages[pageNum].__colCount - wholeDb.tableDataPages[pageNum].__VariableColumns
         console.log("                           " +
-            numFixed + " Fixed + " + pageDefns[pageNum].__VariableColumns + " Variable  = " + pageDefns[pageNum].__colCount + " cols")
+            numFixed + " Fixed + " + wholeDb.tableDataPages[pageNum].__VariableColumns + " Variable  = " + wholeDb.tableDataPages[pageNum].__colCount + " cols")
         let fixedCount = 0
         console.log("                           RecordCount: " + RecordCount)
         console.log("                           FreeSpace: " + FreeSpace)
@@ -762,12 +762,12 @@ function getDataForTableOnPage(pageNum, pageDefns) {
                 console.log("Fixed col data:")
                 console.log("------")
                 //for (let rowIndex=0;rowIndex < RowCount; rowIndex++){
-                    for (let yy=0;yy < pageDefns[pageNum].__colCount; yy++){
-                        if (pageDefns[pageNum].colsInOrder[yy].fixedLength) {
-                            //console.log("Fixed col: " + pageDefns[pageNum].colsInOrder[yy].name + " = " + pageDefns[pageNum].colsInOrder[yy].length + " bytes")
+                    for (let yy=0;yy < wholeDb.tableDataPages[pageNum].__colCount; yy++){
+                        if (wholeDb.tableDataPages[pageNum].colsInOrder[yy].fixedLength) {
+                            //console.log("Fixed col: " + wholeDb.tableDataPages[pageNum].colsInOrder[yy].name + " = " + wholeDb.tableDataPages[pageNum].colsInOrder[yy].length + " bytes")
                             let colVal = getVar({
-                               length: pageDefns[pageNum].colsInOrder[yy].length,
-                               name: pageDefns[pageNum].colsInOrder[yy].name,
+                               length: wholeDb.tableDataPages[pageNum].colsInOrder[yy].length,
+                               name: wholeDb.tableDataPages[pageNum].colsInOrder[yy].name,
                                type: "number"
                             })
                         }
