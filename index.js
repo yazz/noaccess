@@ -165,6 +165,7 @@ exports.load = function(fileName) {
 
 
     function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
+
         tempoffset = 4096 * pageNum
         if (showDebug){
             console.log("")
@@ -333,8 +334,6 @@ exports.load = function(fileName) {
                 length: 1,
                 name: "col Type",
                 type: "number"
-                ,
-                show: false
             })
             newColumn.colType = getColumnType(colType)
             //console.log("Col type: " + getColumnType(colType))
@@ -343,44 +342,32 @@ exports.load = function(fileName) {
                 useJetVersion: 4,
                 length: 4,
                 name: "Unknown"
-                ,
-                show: false
             })
             let ColID = getVar({
                 length: 2,
                 name: "Col ID",
                 type: "number"
-                ,
-                show: false
             })
             let VariableColumnNumber = getVar({
                 length: 2,
                 name: "Variable Column Number",
                 type: "number"
-                ,
-                show: false
             })
         let ColumnIndex =     getVar({
                  length: 2,
                 name: "Column Index",
                 type: "number"
-                ,
-                show: false
             })
             getVar({
                 useJetVersion: 4,
                 length: 4,
                 name: "Various"
-                ,
-                show: false
                 //showas: "hex"
             })
             let ColFlags = getVar({
                 useJetVersion: 4,
                 length: 2,
                 name: "Col Flags"
-                ,
-                show: false
                 //showas: "hex"
             })
             let fixedLength = false
@@ -505,6 +492,12 @@ exports.load = function(fileName) {
         console.log("")
         console.log("...............")
         return listOfTableDefPages[pageNum]
+    }
+
+
+    function getFixedColName(pageNum, varIndex) {
+        //zzz
+        return varIndex
     }
 
 
@@ -770,7 +763,7 @@ exports.load = function(fileName) {
                             if (showDebug) {
                                 console.log("Val:" + VariableLengthFieldOffset)
                             }
-                            tableRecord[varIndex] = VariableLengthFieldOffset
+                            tableRecord[getFixedColName(pageNum, varIndex)] = VariableLengthFieldOffset
 
                         } else {
                             let VariableLengthFieldOffset = getVar({
@@ -781,7 +774,7 @@ exports.load = function(fileName) {
                             if (showDebug) {
                                 console.log("Val:" + VariableLengthFieldOffset)
                             }
-                            tableRecord[varIndex] = toUTF8Array(VariableLengthFieldOffset)
+                            tableRecord[getFixedColName(pageNum, varIndex)] = toUTF8Array(VariableLengthFieldOffset)
                         }
                         //zzz
                     }
@@ -830,19 +823,8 @@ exports.load = function(fileName) {
 
     console.log("------------------------------------------------------------------------------------------")
     let tableDefn = getTableDefinitionForPage(ty,defnPage)
-    console.log("Table defn: " + defnPage + " = " + JSON.stringify(ty[defnPage],null,2))
     console.log("")
     console.log("")
-    console.log("")
-
-
-
-
-
-
-
-
-
     console.log("")
     console.log("")
     console.log("")
@@ -852,7 +834,6 @@ exports.load = function(fileName) {
 
 
     let data = getDataForTableOnPage(defnPage,ty)
-    //let data = getDataForTableOnPage(42,ty)
 
 
 
@@ -861,7 +842,6 @@ exports.load = function(fileName) {
     console.log("")
     console.log("")
     console.log("")
-
     console.log("")
     console.log("")
     console.log("")
