@@ -9,5 +9,9 @@
   "author": "",
   "license": "MIT",
 
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/zubairq/noaccess.git"
+    },
 }
