@@ -32,10 +32,7 @@ var binary              = fs.readFileSync(dbFileName);
 
 findDataPages()
 
-let listDefns = Object.keys(wholeDb.tableDataPages)
-
-console.log("------------------------------------------------------------------------------------------")
-let tableDefn = getTableDefinitionForPage(wholeDb.tableDataPages,defnPage)
+let tableDefn = getTableDefinitionForPage(defnPage)
 let data = getDataForTableOnPage(defnPage,wholeDb.tableDataPages)
 
 
@@ -235,7 +232,7 @@ function findDataPages() {
 //
 //
 // -----------------------------------------------------------------------
-function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
+function getTableDefinitionForPage(pageNum) {
 
     tempoffset = 4096 * pageNum
     if (showDebug){
@@ -250,27 +247,27 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
 
 
     PageSignature = find(tempoffset, 2, "number")
-    listOfTableDefPages[pageNum].PageSignature = PageSignature
+    wholeDb.tableDataPages[pageNum].PageSignature = PageSignature
     VC = find(tempoffset + 2, 2, "number")
-    listOfTableDefPages[pageNum].VC = VC
+    wholeDb.tableDataPages[pageNum].VC = VC
     NextPage = find(tempoffset + 4, 4, "number")
-    listOfTableDefPages[pageNum].NextPage = NextPage
+    wholeDb.tableDataPages[pageNum].NextPage = NextPage
 
 
     tempoffset = tempoffset + 8
 
 
     let TableDefinitionLength = find(tempoffset, 4, "number")
-    listOfTableDefPages[pageNum].TableDefinitionLength = TableDefinitionLength
+    wholeDb.tableDataPages[pageNum].TableDefinitionLength = TableDefinitionLength
 
 
     let Numberofrows = find(tempoffset + 8, 4, "number")
-    listOfTableDefPages[pageNum].Numberofrows = Numberofrows
+    wholeDb.tableDataPages[pageNum].Numberofrows = Numberofrows
 
 
     tempoffset = tempoffset + 12
     let Autonumber = find(tempoffset, 4, "number")
-    listOfTableDefPages[pageNum].Autonumber = Autonumber
+    wholeDb.tableDataPages[pageNum].Autonumber = Autonumber
 
 
 
@@ -282,7 +279,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         name: "Autonumber Increment",
         type: "number"
     })
-    listOfTableDefPages[pageNum].Autonumber = Autonumber
+    wholeDb.tableDataPages[pageNum].Autonumber = Autonumber
 
 
     getVar({
@@ -310,7 +307,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         type: "number",
         showas: "hex"
     })
-    listOfTableDefPages[pageNum].Flags = Flags
+    wholeDb.tableDataPages[pageNum].Flags = Flags
 
 
     let NextColumnId = getVar({
@@ -318,7 +315,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         name: "Next Column Id",
         type: "number"
     })
-    listOfTableDefPages[pageNum].NextColumnId = NextColumnId
+    wholeDb.tableDataPages[pageNum].NextColumnId = NextColumnId
 
 
     let VariableColumns = getVar({
@@ -326,7 +323,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         name: "Variable columns",
         type: "number"
     })
-    listOfTableDefPages[pageNum].__VariableColumns = VariableColumns
+    wholeDb.tableDataPages[pageNum].__VariableColumns = VariableColumns
 
 
     let colCount = getVar({
@@ -335,7 +332,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         type: "number",
         show: true
     })
-    listOfTableDefPages[pageNum].__colCount = colCount
+    wholeDb.tableDataPages[pageNum].__colCount = colCount
 
 
     let indexCount = getVar({
@@ -343,14 +340,14 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         name: "Index Count",
         type: "number"
     })
-    listOfTableDefPages[pageNum].indexCount = indexCount
+    wholeDb.tableDataPages[pageNum].indexCount = indexCount
 
     let RealIndexCount = getVar({
         length: 4,
         name: "Real Index Count",
         type: "number"
     })
-    listOfTableDefPages[pageNum].RealIndexCount = RealIndexCount
+    wholeDb.tableDataPages[pageNum].RealIndexCount = RealIndexCount
 
     let RowPageMapRecord = getVar({
         length: 1,
@@ -358,7 +355,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         type: "number",
         show: true
     })
-    listOfTableDefPages[pageNum].RowPageMapRecord = RowPageMapRecord
+    wholeDb.tableDataPages[pageNum].RowPageMapRecord = RowPageMapRecord
 
     var RowPageMapPage = getVar({
         length: 3,
@@ -366,7 +363,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         type: "number",
         show: true
     })
-    listOfTableDefPages[pageNum].RowPageMapPage = RowPageMapPage
+    wholeDb.tableDataPages[pageNum].RowPageMapPage = RowPageMapPage
 
     let FreeSpacePageMapRecord = getVar({
         length: 1,
@@ -374,7 +371,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         type: "number",
         show: true
     })
-    listOfTableDefPages[pageNum].FreeSpacePageMapRecord = FreeSpacePageMapRecord
+    wholeDb.tableDataPages[pageNum].FreeSpacePageMapRecord = FreeSpacePageMapRecord
 
     let FreeSpacePageMapPage = getVar({
         length: 3,
@@ -382,7 +379,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
         type: "number",
         show: true
     })
-    listOfTableDefPages[pageNum].FreeSpacePageMapPage = FreeSpacePageMapPage
+    wholeDb.tableDataPages[pageNum].FreeSpacePageMapPage = FreeSpacePageMapPage
 
     //
     // skip indexes
@@ -491,7 +488,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
     console.log(" ")
     console.log(" ")
 
-    listOfTableDefPages[pageNum].colsInOrder = {}
+    wholeDb.tableDataPages[pageNum].colsInOrder = {}
     for (var x=0; x< colCount; x++) {
 
         let colLen = getVar({
@@ -515,9 +512,9 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
 
         columns[x].name =  tttt
         columnNames[tttt] = columns[x]
-        listOfTableDefPages[pageNum].colsInOrder[x] = columns[x]
+        wholeDb.tableDataPages[pageNum].colsInOrder[x] = columns[x]
     }
-    listOfTableDefPages[pageNum].columnNames = columnNames
+    wholeDb.tableDataPages[pageNum].columnNames = columnNames
 
 
 
@@ -562,7 +559,7 @@ function getTableDefinitionForPage(listOfTableDefPages, pageNum) {
 
     console.log("")
     console.log("...............")
-    return listOfTableDefPages[pageNum]
+    return wholeDb.tableDataPages[pageNum]
 }
 
 
