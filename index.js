@@ -31,16 +31,11 @@ var binary              = fs.readFileSync(dbFileName);
 //
 
 findDataPages()
+getTableDefinitionForPage(defnPage)
+getDataForTableOnPage(defnPage)
 
-let tableDefn = getTableDefinitionForPage(defnPage)
-let data = getDataForTableOnPage(defnPage)
 
 
-let returnItems = {
-    page_no: defnPage,
-    table_definition: tableDefn,
-    table_data: data
-}
 return  wholeDb
 
 
