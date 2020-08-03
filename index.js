@@ -1,4 +1,4 @@
 exports.printMsg = function() {
-  console.log("This is a message from the demo package");
-  return {a: 1}
+  console.log("This is the MS Access Import npm package");
+  return {Z: 1}
 }
