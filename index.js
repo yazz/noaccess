@@ -554,7 +554,7 @@ exports.load = function(fileName) {
 
         console.log("")
         console.log("...............")
-
+        return listOfTableDefPages[pageNum]
     }
 
 
@@ -873,15 +873,13 @@ exports.load = function(fileName) {
     let ty = getListOfTableDefPages()
 
     let listDefns = Object.keys(ty)
-    //for (let currentTableDefn = 0 ; currentTableDefn < listDefns.length ; currentTableDefn++){
-        //let defnPage = listDefns[currentTableDefn]
-        console.log("------------------------------------------------------------------------------------------")
-        getTableDefinitionForPage(ty,defnPage)
-        console.log("Table defn: " + defnPage + " = " + JSON.stringify(ty[defnPage],null,2))
-        console.log("")
-        console.log("")
-        console.log("")
-    //}
+
+    console.log("------------------------------------------------------------------------------------------")
+    let tableDefn = getTableDefinitionForPage(ty,defnPage)
+    console.log("Table defn: " + defnPage + " = " + JSON.stringify(ty[defnPage],null,2))
+    console.log("")
+    console.log("")
+    console.log("")
 
 
 
@@ -916,7 +914,9 @@ exports.load = function(fileName) {
     console.log("")
 
     let returnItems = {
-        tableDefns: data
+        page_no: defnPage,
+        table_definition: tableDefn,
+        table_data: data
     }
     return  returnItems
 
