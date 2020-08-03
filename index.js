@@ -572,6 +572,8 @@ exports.load = function(fileName) {
 
 
     function getDataForTableOnPage(pageNum, pageDefns) {
+        let tableData = []
+
         showDebug=true
         if (showDebug){
             console.log("")
@@ -653,6 +655,7 @@ exports.load = function(fileName) {
             let offsetList = []
             let lastEnd = (4096 * dataPageNum) + 4096 - 1
             for (let recIndex = 0 ; recIndex < RecordCount; recIndex++) {
+
                 let RawRecordOffset = getVar({
                    length: 2,
                    name: "RecordOffset",
@@ -711,6 +714,9 @@ exports.load = function(fileName) {
             console.log("")
 
             for (let rc = 0;rc < RecordCount; rc ++) {
+                tableRecord = {}
+                tableData.push(tableRecord)
+
                 console.log("RecordID: " + rc)
                 if (offsetList[rc].valid) {
                     console.log( offsetList[rc].RealOffset + " - " + (offsetList[rc].RealOffset + offsetList[rc].length - 1))
@@ -732,7 +738,6 @@ exports.load = function(fileName) {
                                    length: pageDefns[pageNum].colsInOrder[yy].length,
                                    name: pageDefns[pageNum].colsInOrder[yy].name,
                                    type: "number"
-                                   , show: true
                                 })
                             }
                         }
@@ -813,6 +818,7 @@ exports.load = function(fileName) {
                             })
                             //console.log("Val:" + toUTF8Array(VariableLengthFieldOffset))
                             console.log("Val:" + VariableLengthFieldOffset)
+                            tableRecord[varIndex] = VariableLengthFieldOffset
 
                         } else {
                             let VariableLengthFieldOffset = getVar({
@@ -821,6 +827,7 @@ exports.load = function(fileName) {
                             })
                             //console.log("Val:" + toUTF8Array(VariableLengthFieldOffset))
                             console.log("Val:" + VariableLengthFieldOffset)
+                            tableRecord[varIndex] = toUTF8Array(VariableLengthFieldOffset)
                         }
                         //zzz
                     }
@@ -839,6 +846,7 @@ exports.load = function(fileName) {
 
 
         }
+        return tableData
     }
 
 
@@ -907,20 +915,10 @@ exports.load = function(fileName) {
     console.log("")
     console.log("")
 
-
-
-    function findTypeOfPage(pageType) {
-        for (let currentPage = 0 ; currentPage < numPages; currentPage++){
-            tempoffset = 4096 * currentPage
-            let PageSignature = getVar({
-                  length: 1,
-                  name: "Page Type",
-                  type: "number"
-               })
-            if (PageSignature == pageType) {
-               console.log(currentPage)
-           }
-        }
+    let returnItems = {
+        tableDefns: data
     }
+    return  returnItems
+
 
 }
