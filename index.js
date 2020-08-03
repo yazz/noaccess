@@ -506,7 +506,7 @@ function getTableDefinitionForPage(pageNum) {
         //console.log("columns[" + x + "]: " + columns[x])
 
         columns[x].name =  tttt
-        columnNames[tttt] = columns[x]
+        columnNames[tttt] = x
         wholeDb.tableDataPages[pageNum].colsInOrder[x] = columns[x]
     }
     wholeDb.tableDataPages[pageNum].columnNames = columnNames
