@@ -573,7 +573,9 @@ function getTableDefinitionForPage(pageNum) {
 // -----------------------------------------------------------------------
 function getFixedColName(pageNum, varIndex) {
     //zzz
-    return varIndex
+    return    wholeDb.tableDataPages[pageNum].colsInOrder[
+        wholeDb.tableDataPages[pageNum].fixedColsList[varIndex] 
+    ].name
 }
 
 
@@ -880,7 +882,9 @@ function getDataForTableOnPage(pageNum) {
 
 
     }
-    return tableData
+    wholeDb.data = {}
+
+    wholeDb.data[pageNum] = tableData
 }
 
 
