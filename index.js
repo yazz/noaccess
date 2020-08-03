@@ -574,7 +574,7 @@ function getTableDefinitionForPage(pageNum) {
 function getFixedColName(pageNum, varIndex) {
     //zzz
     return    wholeDb.tableDataPages[pageNum].colsInOrder[
-        wholeDb.tableDataPages[pageNum].fixedColsList[varIndex] 
+        wholeDb.tableDataPages[pageNum].fixedColsList[varIndex]
     ].name
 }
 
@@ -681,7 +681,7 @@ function getDataForTableOnPage(pageNum) {
            type: "number"
         })
         let NullFieldBitmapLength = Math.floor((wholeDb.tableDataPages[pageNum].__colCount + 7) / 8)
-
+        //Math.pow(2, 0)
 
         let offsetList = []
         let lastEnd = (4096 * dataPageNum) + 4096 - 1
@@ -775,7 +775,29 @@ function getDataForTableOnPage(pageNum) {
 
                     console.log("")
 
+                    let NullFieldBitmapLength = Math.floor((wholeDb.tableDataPages[pageNum].__colCount + 7) / 8)
                     console.log("NullFieldBitmapLength: " + NullFieldBitmapLength)
+                    //Math.pow(2, 0)
+                    //zzz
+                    tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
+                    let FieldMask = getVar({
+                       length: NullFieldBitmapLength,
+                       name: "FieldMask",
+                       type: "number"
+                    })
+                    console.log("FieldMask: " + FieldMask)
+                    for (let recIndex = 0 ; recIndex < wholeDb.tableDataPages[pageNum].__colCount; recIndex++) {
+                        let maskBit = Math.pow(2, recIndex)
+                        if (FieldMask & maskBit) {
+                            console.log("      " + recIndex + " *******")
+                        } else {
+                            console.log("      " + recIndex + "" )
+
+                        }
+                    }
+
+
+
                     tempoffset = offsetList[rc].end - NullFieldBitmapLength - 1
                     let lastOffset = tempoffset
                     let VariableLengthFieldCount = getVar({
@@ -865,7 +887,7 @@ function getDataForTableOnPage(pageNum) {
                         }
                         tableRecord[getFixedColName(pageNum, varIndex)] = toUTF8Array(VariableLengthFieldOffset)
                     }
-                    //zzz
+
                 }
 
             }
