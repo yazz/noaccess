@@ -1,164 +1,211 @@
 exports.load = function(fileName) {
-    console.log("Load Access file: " + fileName);
 
-    //2,4, 5, 18, 42
-    let defnPage            = 2
-    let headerJetVersion    = 4
-    var fs                  = require("fs");
-    let showDebug           = false
-    let dbFileName          = fileName
-    var offset              = 0
-    var tempoffset
-    var stats               = fs.statSync(dbFileName)
-    var fileSizeInBytes     = stats["size"]
-    let numPages            = (fileSizeInBytes / 4096) + 1
+console.log("Load Access file: " + fileName);
 
-    if (showDebug) {
-        console.log("fileSizeInBytes: " + fileSizeInBytes )
-        console.log("")
-        console.log("")
+//2,4, 5, 18, 42
+let defnPage            = 2
+let headerJetVersion    = 4
+var fs                  = require("fs");
+let showDebug           = false
+let dbFileName          = fileName
+var offset              = 0
+var tempoffset
+var stats               = fs.statSync(dbFileName)
+var fileSizeInBytes     = stats["size"]
+let numPages            = (fileSizeInBytes / 4096) + 1
+let listOfTableDefPages = {}
+let wholeDb             = {}
+
+if (showDebug) {
+    console.log("fileSizeInBytes: " + fileSizeInBytes )
+    console.log("")
+    console.log("")
+}
+
+var binary              = fs.readFileSync(dbFileName);
+
+
+
+
+
+
+
+// -----------------------------------------------------------------------
+//
+//
+//
+//
+// -----------------------------------------------------------------------
+function byteArrayToLong(/*byte[]*/byteArray) {
+    var value = 0;
+    for ( var i = byteArray.length - 1; i >= 0; i--) {
+        value = (value * 256) + byteArray[i];
     }
 
-    var binary              = fs.readFileSync(dbFileName);
+    return value;
+};
 
 
 
 
 
-    function getInt64Bytes(x) {
-      let y= Math.floor(x/2**32);
-      return [y,(y<<8),(y<<16),(y<<24), x,(x<<8),(x<<16),(x<<24)].map(z=> z>>>24)
+
+
+
+// -----------------------------------------------------------------------
+//
+//
+//
+//
+// -----------------------------------------------------------------------
+function find(aoffset, length , typeob) {
+    let value = binary.slice(aoffset, aoffset + length)
+    if (typeob=="number") {
+        return byteArrayToLong(value)
+    } else if (typeob == "littleendian")  {
+        value = [value[2],value[1],value[0]]
+        return byteArrayToLong(value)
     }
-
-    function intFromBytes(byteArr) {
-        return byteArr.reduce((a,c,i)=> a+c*2**(56-i*8),0)
-    }
-
-    function byteArrayToLong(/*byte[]*/byteArray) {
-        var value = 0;
-        for ( var i = byteArray.length - 1; i >= 0; i--) {
-            value = (value * 256) + byteArray[i];
-        }
-
-        return value;
-    };
+    return value
+}
 
 
 
-    function find(aoffset, length , typeob) {
-        let value = binary.slice(aoffset, aoffset + length)
-        if (typeob=="number") {
-            return byteArrayToLong(value)
-        } else if (typeob == "littleendian")  {
-            value = [value[2],value[1],value[0]]
-            return byteArrayToLong(value)
-        }
-        return value
-    }
 
 
 
-    function getVar(params) {
-        if (params.useJetVersion) {
-            if (headerJetVersion != params.useJetVersion) {
-                console.log("Skipping " + params.name)
-                return null
-            }
-        }
-        let retvalue = find(tempoffset , params.length, params.type)
-
-        tempoffset = tempoffset + params.length
-        if (params.type == "string") {
-            retvalue = retvalue.toString()
-        }
-        return retvalue
-    }
 
 
-    function getColumnType(colType) {
-        switch(colType) {
-            case 1:
-                return "Boolean"
-            case 2:
-                return "Integer, 8 bit"
-            case 3:
-                return "Integer, 16 bit"
-            case 4:
-                return "Integer, 32 bit"
-            case 5:
-                return "Fixed Point Number, 64 bit (Money / Currency)"
-            case 6:
-                return "Floating Point Number, 32 bit (single)"
-            case 7:
-                return "Floating Point Number, 64 bit (double)"
-            case 8:
-                return "Date/Time, 64 bit, (stored as double)"
-            case 9:
-                return "Binary (up to 255 bytes)"
-            case 10:
-                return "Text (up to 255 characters)"
-            case 11:
-                return "OLE (long binary)"
-            case 12:
-                return "Memo (long Text)"
-            case 15:
-                return "GUID (global unique identifier)"
-            case 16:
-                return "Fixed Point, 96 bit, stored in 17 bytes"
-            case 18:
-                return "Complex field (32 bit integer key)"
-                break;
-          default:
-            return "Unknown"
-            // code block
+
+// -----------------------------------------------------------------------
+//
+//
+//
+//
+// -----------------------------------------------------------------------
+function getVar(params) {
+    if (params.useJetVersion) {
+        if (headerJetVersion != params.useJetVersion) {
+            console.log("Skipping " + params.name)
+            return null
         }
     }
+    let retvalue = find(tempoffset , params.length, params.type)
+
+    tempoffset = tempoffset + params.length
+    if (params.type == "string") {
+        retvalue = retvalue.toString()
+    }
+    return retvalue
+}
 
 
 
-    function getListOfTableDefPages() {
-        let listOfTableDefPages = {}
-        for (let currentPage = 0 ; currentPage < numPages; currentPage++){
-            tempoffset = 4096 * currentPage
-            let PageSignature = getVar({
-                  length: 1,
-                  name: "Page Type",
-                  type: "number"
-               })
-            if (PageSignature == 0x01) {
-               getVar({
-                  length: 1,
-                  name: "Unknown",
-                  type: "number"
-               })
 
-                getVar({
-                   length: 2,
-                   name: "Free Space",
-                   type: "number"
-               })
-               let tdef_pg = getVar({
-                  length: 3,
-                  name: "tdef_pg",
-                  type: "number"
-               })
 
-               if (tdef_pg < 2) {
 
-               } else if (tdef_pg > 10000) {
+// -----------------------------------------------------------------------
+//
+//
+//
+//
+// -----------------------------------------------------------------------
 
-               } else if (!listOfTableDefPages[tdef_pg]) {
-                   listOfTableDefPages[tdef_pg] = {
-                       pages: [currentPage]
-                   }
+function getColumnType(colType) {
+    switch(colType) {
+        case 1:
+            return "Boolean"
+        case 2:
+            return "Integer, 8 bit"
+        case 3:
+            return "Integer, 16 bit"
+        case 4:
+            return "Integer, 32 bit"
+        case 5:
+            return "Fixed Point Number, 64 bit (Money / Currency)"
+        case 6:
+            return "Floating Point Number, 32 bit (single)"
+        case 7:
+            return "Floating Point Number, 64 bit (double)"
+        case 8:
+            return "Date/Time, 64 bit, (stored as double)"
+        case 9:
+            return "Binary (up to 255 bytes)"
+        case 10:
+            return "Text (up to 255 characters)"
+        case 11:
+            return "OLE (long binary)"
+        case 12:
+            return "Memo (long Text)"
+        case 15:
+            return "GUID (global unique identifier)"
+        case 16:
+            return "Fixed Point, 96 bit, stored in 17 bytes"
+        case 18:
+            return "Complex field (32 bit integer key)"
+            break;
+      default:
+        return "Unknown"
+        // code block
+    }
+}
 
-               } else {
-                   listOfTableDefPages[tdef_pg].pages.push(currentPage)
+
+
+
+
+
+// -----------------------------------------------------------------------
+//
+//
+//
+//
+// -----------------------------------------------------------------------
+function findDataPages() {
+
+    for (let currentPage = 0 ; currentPage < numPages; currentPage++){
+        tempoffset = 4096 * currentPage
+        let PageSignature = getVar({
+              length: 1,
+              name: "Page Type",
+              type: "number"
+           })
+        if (PageSignature == 0x01) {
+           getVar({
+              length: 1,
+              name: "Unknown",
+              type: "number"
+           })
+
+            getVar({
+               length: 2,
+               name: "Free Space",
+               type: "number"
+           })
+           let tdef_pg = getVar({
+              length: 3,
+              name: "tdef_pg",
+              type: "number"
+           })
+
+           if (tdef_pg < 2) {
+
+           } else if (tdef_pg > 10000) {
+
+           } else if (!listOfTableDefPages[tdef_pg]) {
+               listOfTableDefPages[tdef_pg] = {
+                   pages: [currentPage]
                }
-            }
+
+           } else {
+               listOfTableDefPages[tdef_pg].pages.push(currentPage)
+           }
         }
-        return listOfTableDefPages
     }
+
+    wholeDb.tableDataPages = listOfTableDefPages
+    return listOfTableDefPages
+}
 
 
 
@@ -495,6 +542,11 @@ exports.load = function(fileName) {
     }
 
 
+
+
+
+
+
     function getFixedColName(pageNum, varIndex) {
         //zzz
         return varIndex
@@ -817,7 +869,7 @@ exports.load = function(fileName) {
     //
     //
     //
-    let ty = getListOfTableDefPages()
+    let ty = findDataPages()
 
     let listDefns = Object.keys(ty)
 
@@ -852,7 +904,7 @@ exports.load = function(fileName) {
         table_definition: tableDefn,
         table_data: data
     }
-    return  returnItems
+    return  wholeDb
 
 
 }
