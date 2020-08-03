@@ -13,7 +13,7 @@ var tempoffset
 var stats               = fs.statSync(dbFileName)
 var fileSizeInBytes     = stats["size"]
 let numPages            = (fileSizeInBytes / 4096) + 1
-let listOfTableDefPages = {}
+
 let wholeDb             = {}
 
 if (showDebug) {
@@ -30,13 +30,13 @@ var binary              = fs.readFileSync(dbFileName);
 // do stuff with the functions
 //
 
-let ty = findDataPages()
+findDataPages()
 
-let listDefns = Object.keys(ty)
+let listDefns = Object.keys(wholeDb.tableDataPages)
 
 console.log("------------------------------------------------------------------------------------------")
-let tableDefn = getTableDefinitionForPage(ty,defnPage)
-let data = getDataForTableOnPage(defnPage,ty)
+let tableDefn = getTableDefinitionForPage(wholeDb.tableDataPages,defnPage)
+let data = getDataForTableOnPage(defnPage,wholeDb.tableDataPages)
 
 
 let returnItems = {
@@ -181,7 +181,7 @@ function getColumnType(colType) {
 //
 // -----------------------------------------------------------------------
 function findDataPages() {
-
+    let listOfTableDefPages = {}
     for (let currentPage = 0 ; currentPage < numPages; currentPage++){
         tempoffset = 4096 * currentPage
         let PageSignature = getVar({
@@ -223,7 +223,7 @@ function findDataPages() {
     }
 
     wholeDb.tableDataPages = listOfTableDefPages
-    return listOfTableDefPages
+
 }
 
 
