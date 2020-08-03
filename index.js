@@ -26,6 +26,25 @@ var binary              = fs.readFileSync(dbFileName);
 
 
 
+//
+// do stuff with the functions
+//
+
+let ty = findDataPages()
+
+let listDefns = Object.keys(ty)
+
+console.log("------------------------------------------------------------------------------------------")
+let tableDefn = getTableDefinitionForPage(ty,defnPage)
+let data = getDataForTableOnPage(defnPage,ty)
+
+
+let returnItems = {
+    page_no: defnPage,
+    table_definition: tableDefn,
+    table_data: data
+}
+return  wholeDb
 
 
 
@@ -854,57 +873,6 @@ function findDataPages() {
 
 
 
-
-
-
-
-
-
-
-    //
-    //
-    //
-    // do stuff with the functions
-    //
-    //
-    //
-    //
-    let ty = findDataPages()
-
-    let listDefns = Object.keys(ty)
-
-    console.log("------------------------------------------------------------------------------------------")
-    let tableDefn = getTableDefinitionForPage(ty,defnPage)
-    console.log("")
-    console.log("")
-    console.log("")
-    console.log("")
-    console.log("")
-    console.log("")
-
-
-
-
-    let data = getDataForTableOnPage(defnPage,ty)
-
-
-
-
-    console.log("")
-    console.log("")
-    console.log("")
-    console.log("")
-    console.log("")
-    console.log("")
-    console.log("")
-    console.log("")
-
-    let returnItems = {
-        page_no: defnPage,
-        table_definition: tableDefn,
-        table_data: data
-    }
-    return  wholeDb
 
 
 }
