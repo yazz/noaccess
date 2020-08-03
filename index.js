@@ -1,48 +1,29 @@
-exports.printMsg = function() {
-  console.log("This is the MS Access Import npm package");
-  return {Z: 1}
-}
-
 exports.load = function(fileName) {
-    console.log("Load file: " + fileName);
+    console.log("Load Access file: " + fileName);
+
     //2,4, 5, 18, 42
-    let defnPage =2
-
-    let headerJetVersion = 4
-    var fs = require("fs");
-    let showDebug = false
-    let dbFileName = fileName
-
-    console.log("importing MDB: " + dbFileName )
-
-    var offset = 0
+    let defnPage            = 2
+    let headerJetVersion    = 4
+    var fs                  = require("fs");
+    let showDebug           = false
+    let dbFileName          = fileName
+    var offset              = 0
     var tempoffset
+    var stats               = fs.statSync(dbFileName)
+    var fileSizeInBytes     = stats["size"]
+    let numPages            = (fileSizeInBytes / 4096) + 1
+
+    if (showDebug) {
+        console.log("fileSizeInBytes: " + fileSizeInBytes )
+        console.log("")
+        console.log("")
+    }
+
+    var binary              = fs.readFileSync(dbFileName);
 
 
-    var stats = fs.statSync(dbFileName)
-    var fileSizeInBytes = stats["size"]
-    let numPages = (fileSizeInBytes / 4096) + 1
 
-    console.log("fileSizeInBytes: " + fileSizeInBytes )
-    console.log("")
-    console.log("")
 
-    var binary = fs.readFileSync(dbFileName);
-
-    //show("Buffer loaded?: " , Buffer.isBuffer( binary))
-
-    function longToByteArray(/*long*/long) {
-        // we want to represent the input as a 8-bytes array
-        var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
-
-        for ( var index = 0; index < byteArray.length; index ++ ) {
-            var byte = long & 0xff;
-            byteArray [ index ] = byte;
-            long = (long - byte) / 256 ;
-        }
-
-        return byteArray;
-    };
 
     function getInt64Bytes(x) {
       let y= Math.floor(x/2**32);
@@ -62,21 +43,7 @@ exports.load = function(fileName) {
         return value;
     };
 
-    function show(title, value, typeshow ) {
-        if (typeshow == "number") {
-            console.log(title + ": " + byteArrayToLong(value))
 
-        } else if (typeshow == "integer") {
-            console.log(title + ": " + intFromBytes(value))
-
-        } else if (typeshow == "hex") {
-            console.log(title + ": 0x" + value.toString(16))
-
-        } else {
-            console.log(title + ": " + value)
-
-        }
-    }
 
     function find(aoffset, length , typeob) {
         let value = binary.slice(aoffset, aoffset + length)
@@ -99,11 +66,7 @@ exports.load = function(fileName) {
             }
         }
         let retvalue = find(tempoffset , params.length, params.type)
-        if (params.show) {
-            if (showDebug){
-                show(params.name, retvalue, params.showas)
-            }
-        }
+
         tempoffset = tempoffset + params.length
         if (params.type == "string") {
             retvalue = retvalue.toString()
@@ -222,33 +185,20 @@ exports.load = function(fileName) {
         listOfTableDefPages[pageNum].NextPage = NextPage
 
 
-        if (showDebug){
-            show("Page Signature", PageSignature, "hex")
-            show("VC", VC)
-            show("NextPage", NextPage)
-        }
-
         tempoffset = tempoffset + 8
 
 
         let TableDefinitionLength = find(tempoffset, 4, "number")
         listOfTableDefPages[pageNum].TableDefinitionLength = TableDefinitionLength
-        if (showDebug){
-            show("Table Definition Length", TableDefinitionLength)
-        }
+
 
         let Numberofrows = find(tempoffset + 8, 4, "number")
         listOfTableDefPages[pageNum].Numberofrows = Numberofrows
-        if (showDebug){
-            show("Number of rows", Numberofrows)
-        }
+
 
         tempoffset = tempoffset + 12
         let Autonumber = find(tempoffset, 4, "number")
         listOfTableDefPages[pageNum].Autonumber = Autonumber
-        if (showDebug){
-            show("Autonumber", Autonumber)
-        }
 
 
 
@@ -574,7 +524,6 @@ exports.load = function(fileName) {
     function getDataForTableOnPage(pageNum, pageDefns) {
         let tableData = []
 
-        showDebug=true
         if (showDebug){
             console.log("")
             console.log("")
@@ -802,7 +751,9 @@ exports.load = function(fileName) {
                                name: "Eod",
                                type: "number"
                             })
-                            console.log("Eod:" + Eod)
+                            if (showDebug){
+                                console.log("Eod:" + Eod)
+                            }
                         }
                         console.log("")
                 //}
@@ -816,8 +767,9 @@ exports.load = function(fileName) {
                                name: "VariableLengthFieldOffset",
                                type: "number"
                             })
-                            //console.log("Val:" + toUTF8Array(VariableLengthFieldOffset))
-                            console.log("Val:" + VariableLengthFieldOffset)
+                            if (showDebug) {
+                                console.log("Val:" + VariableLengthFieldOffset)
+                            }
                             tableRecord[varIndex] = VariableLengthFieldOffset
 
                         } else {
@@ -826,7 +778,9 @@ exports.load = function(fileName) {
                                name: "VariableLengthFieldOffset"
                             })
                             //console.log("Val:" + toUTF8Array(VariableLengthFieldOffset))
-                            console.log("Val:" + VariableLengthFieldOffset)
+                            if (showDebug) {
+                                console.log("Val:" + VariableLengthFieldOffset)
+                            }
                             tableRecord[varIndex] = toUTF8Array(VariableLengthFieldOffset)
                         }
                         //zzz
