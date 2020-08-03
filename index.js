@@ -579,6 +579,18 @@ function getFixedColName(pageNum, varIndex) {
 }
 
 
+// -----------------------------------------------------------------------
+//
+//
+//
+//
+// -----------------------------------------------------------------------
+function getColName(pageNum, varIndex) {
+    //zzz
+    return    (wholeDb.tableDataPages[pageNum].colsInOrder[varIndex].name).padEnd(25, ' ')
+    //return varIndex
+}
+
 
 
 
@@ -776,10 +788,12 @@ function getDataForTableOnPage(pageNum) {
                     console.log("")
 
                     let NullFieldBitmapLength = Math.floor((wholeDb.tableDataPages[pageNum].__colCount + 7) / 8)
-                    console.log("NullFieldBitmapLength: " + NullFieldBitmapLength)
                     //Math.pow(2, 0)
                     //zzz
                     tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
+
+                    console.log("NullFieldBitmapLength: " + NullFieldBitmapLength)
+                    console.log("NullFieldBitmap Pos: " + tempoffset)
                     let FieldMask = getVar({
                        length: NullFieldBitmapLength,
                        name: "FieldMask",
@@ -789,9 +803,9 @@ function getDataForTableOnPage(pageNum) {
                     for (let recIndex = 0 ; recIndex < wholeDb.tableDataPages[pageNum].__colCount; recIndex++) {
                         let maskBit = Math.pow(2, recIndex)
                         if (FieldMask & maskBit) {
-                            console.log("      " + recIndex + " *******")
+                            console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + " *******")
                         } else {
-                            console.log("      " + recIndex + "" )
+                            console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + "" )
 
                         }
                     }
