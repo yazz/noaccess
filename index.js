@@ -634,34 +634,27 @@ function populateDataForTableDefinedOnPage(pageNum) {
            showas:  "hex"
        })
 
-        getVar({ length: 1, name: "Unknown", type: "number"})
-        let FreeSpace = getVar({length: 2, name: "Free Space", type: "number"})
-        let tdef_pg = getVar({length: 3,name: "tdef_pg",type: "number"})
+       //
+       // for each data page first read the header of the data page
+       //
+       getVar({ length: 1, name: "Unknown", type: "number"})
+       let FreeSpace = getVar({length: 2, name: "Free Space", type: "number"})
+       let tdef_pg = getVar({length: 3,name: "tdef_pg",type: "number"})
+       let pgr = getVar({length: 1,name: "tdef_pg record",type: "number"})
+       let Owner = getVar({length: 4,name: "Unknown",type: "number"})
+       let RecordCount = getVar({length: 2,name: "RecordCount",type: "number"})
+       let NullFieldBitmapLength = Math.floor((wholeDb.tableDefinition[pageNum].__colCount + 7) / 8)
 
-        let pgr = getVar({
-           length: 1,
-           name: "tdef_pg record",
-           type: "number"
-           , show: false
-        })
-        let Owner = getVar({
-           length: 4,
-           name: "Unknown",
-           type: "number"
-           , show: false
-        })
-        let RecordCount = getVar({
-           length: 2,
-           name: "RecordCount",
-           type: "number"
-        })
-        let NullFieldBitmapLength = Math.floor((wholeDb.tableDefinition[pageNum].__colCount + 7) / 8)
+       //
+       // Since we are given the record count for how many records are stored
+       // on this data page in "RecordCount" we can go through and find all
+       // the record positions on this page since we are given the offsets
+       //
+       let offsetList = []
+       let lastEnd = (4096 * dataPageNum) + 4096 - 1
+       for (let recIndex = 0 ; recIndex < RecordCount; recIndex++) {
 
-        let offsetList = []
-        let lastEnd = (4096 * dataPageNum) + 4096 - 1
-        for (let recIndex = 0 ; recIndex < RecordCount; recIndex++) {
-
-            let RawRecordOffset = getVar({
+           let RawRecordOffset = getVar({
                length: 2,
                name: "RecordOffset",
                type: "number"
@@ -692,31 +685,12 @@ function populateDataForTableDefinedOnPage(pageNum) {
             newRecordMetaData.length = (newRecordMetaData.end - newRecordMetaData.start) + 1
             lastEnd = newRecordMetaData.start - 1
 
-
             offsetList.push( newRecordMetaData )
-
-            //console.log("Record: " + recIndex + ": " + JSON.stringify(newRecordMetaData,null,2))
-
         }
 
-
-
         let NumCols = Object.keys(wholeDb.tableDefinition[pageNum].colsInOrder).length
-        //console.log(wholeDb.tableDefinition[pageNum].colsInOrder)
         let numFixed = wholeDb.tableDefinition[pageNum].__colCount - wholeDb.tableDefinition[pageNum].__VariableColumns
-        console.log("                           " +
-            numFixed + " Fixed + " + wholeDb.tableDefinition[pageNum].__VariableColumns + " Variable  = " + wholeDb.tableDefinition[pageNum].__colCount + " cols")
         let fixedCount = 0
-        console.log("                           RecordCount: " + RecordCount)
-        console.log("                           FreeSpace: " + FreeSpace)
-        console.log("                           Table defn page: " + tdef_pg)
-        console.log("                           Owner: " + Owner)
-        console.log("")
-        console.log("")
-        console.log("")
-        console.log("")
-        console.log("")
-        console.log("")
 
         for (let rc = 0;rc < RecordCount; rc ++) {
             tableRecord = {}
