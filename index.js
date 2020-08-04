@@ -688,171 +688,105 @@ function populateDataForTableDefinedOnPage(pageNum) {
             offsetList.push( newRecordMetaData )
         }
 
-        let NumCols = Object.keys(wholeDb.tableDefinition[pageNum].colsInOrder).length
-        let numFixed = wholeDb.tableDefinition[pageNum].__colCount - wholeDb.tableDefinition[pageNum].__VariableColumns
-        let fixedCount = 0
+        //
+        // Now that we have all the positions of the records within this data page
+        // stored in "offsetList" we can go through all the records
+        //
+        let NumCols     = Object.keys(wholeDb.tableDefinition[pageNum].colsInOrder).length
+        let numFixed    = wholeDb.tableDefinition[pageNum].__colCount - wholeDb.tableDefinition[pageNum].__VariableColumns
+        let fixedCount  = 0
 
         for (let rc = 0;rc < RecordCount; rc ++) {
             tableRecord = {}
             tableData.push(tableRecord)
 
-            console.log("RecordID: " + rc)
             if (offsetList[rc].valid) {
-                console.log( offsetList[rc].RealOffset + " - " + (offsetList[rc].RealOffset + offsetList[rc].length - 1))
                 tempoffset = offsetList[rc].start
-                let NumCols = getVar({
-                    length: 2,
-                    name: "NumCols",
-                    type: "number"
+                let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
+                for (let yy=0;yy < wholeDb.tableDefinition[pageNum].__colCount; yy++){
+                    if (wholeDb.tableDefinition[pageNum].colsInOrder[yy].fixedLength) {
+                        let colVal = getVar({
+                           length: wholeDb.tableDefinition[pageNum].colsInOrder[yy].length,
+                           name: wholeDb.tableDefinition[pageNum].colsInOrder[yy].name,
+                           type: "number"
+                        })
+                    }
+                }
+
+                let NullFieldBitmapLength = Math.floor((wholeDb.tableDefinition[pageNum].__colCount + 7) / 8)
+
+                tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
+
+                let FieldMask = getVar({
+                   length: NullFieldBitmapLength,
+                   name: "FieldMask",
+                   type: "number"
                 })
-                console.log("NumCols: " + NumCols)
 
-                console.log("Fixed col data:")
-                console.log("------")
-                //for (let rowIndex=0;rowIndex < RowCount; rowIndex++){
-                    for (let yy=0;yy < wholeDb.tableDefinition[pageNum].__colCount; yy++){
-                        if (wholeDb.tableDefinition[pageNum].colsInOrder[yy].fixedLength) {
-                            //console.log("Fixed col: " + wholeDb.tableDefinition[pageNum].colsInOrder[yy].name + " = " + wholeDb.tableDefinition[pageNum].colsInOrder[yy].length + " bytes")
-                            let colVal = getVar({
-                               length: wholeDb.tableDefinition[pageNum].colsInOrder[yy].length,
-                               name: wholeDb.tableDefinition[pageNum].colsInOrder[yy].name,
-                               type: "number"
-                            })
-                        }
-                    }
-
-                    console.log("")
-
-                    let NullFieldBitmapLength = Math.floor((wholeDb.tableDefinition[pageNum].__colCount + 7) / 8)
-                    //Math.pow(2, 0)
-                    //zzz
-                    tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
-
-                    console.log("NullFieldBitmapLength: " + NullFieldBitmapLength)
-                    console.log("NullFieldBitmap Pos: " + tempoffset)
-                    let FieldMask = getVar({
-                       length: NullFieldBitmapLength,
-                       name: "FieldMask",
-                       type: "number"
-                    })
-                    console.log("FieldMask: " + FieldMask)
-                    for (let recIndex = 0 ; recIndex < wholeDb.tableDefinition[pageNum].__colCount; recIndex++) {
-                        let maskBit = Math.pow(2, recIndex)
-                        if (FieldMask & maskBit) {
-                            console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + " *******")
-                        } else {
-                            console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + "" )
-
-                        }
-                    }
-
-
-
-                    tempoffset = offsetList[rc].end - NullFieldBitmapLength - 1
-                    let lastOffset = tempoffset
-                    let VariableLengthFieldCount = getVar({
-                       length: 2,
-                       name: "VariableLengthFieldCount",
-                       type: "number"
-                    })
-                    console.log("VariableLengthFieldCount:" + VariableLengthFieldCount)
-
-                    console.log("")
-                    console.log("")
-                    console.log("")
-
-
-                    let listOfOffsets = []
-                    let listOfOffsetsRaw = []
-                    let endRec = lastOffset
-                    for (let varIndex=0; varIndex < VariableLengthFieldCount;varIndex++){
-
-                        tempoffset = lastOffset - 2
-                        lastOffset = tempoffset
-                        let VariableLengthFieldOffset = getVar({
-                           length: 2,
-                           name: "VariableLengthFieldOffset",
-                           type: "number"
-                        })
-                        listOfOffsetsRaw.push(VariableLengthFieldOffset)
-                        if ((varIndex == 0 ) || (listOfOffsetsRaw[varIndex] != listOfOffsetsRaw[varIndex - 1])) {
-                            listOfOffsets.push({relative_offset: VariableLengthFieldOffset,
-                                                start: offsetList[rc].start + VariableLengthFieldOffset})
-                            console.log("VariableLengthFieldOffset:" + VariableLengthFieldOffset)
-                        }
-                    }
-                    for (let varIndex=0; varIndex < listOfOffsets.length;varIndex++) {
-
-                        if (varIndex == (listOfOffsets.length - 1) ) {
-                            let varColData = listOfOffsets[ varIndex ]
-                            varColData.length = 2
-                            varColData.end = varColData.start + 2
-                        } else {
-                            let varColData = listOfOffsets[ varIndex ]
-                            let nextColData = listOfOffsets[ varIndex + 1 ]
-                            varColData.length = nextColData.relative_offset - varColData.relative_offset
-                            varColData.end = nextColData.start - 1
-                        }
+                for (let recIndex = 0 ; recIndex < wholeDb.tableDefinition[pageNum].__colCount; recIndex++) {
+                    let maskBit = Math.pow(2, recIndex)
+                    if (FieldMask & maskBit) {
+                        console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + " *******")
+                    } else {
+                        console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + "" )
 
                     }
-                    console.log("Variable fields:" + JSON.stringify(listOfOffsets,null,2))
+                }
 
-                    for (let i=0;i<20;i++){
-                        tempoffset = lastOffset - 2
-                        lastOffset = tempoffset
-                        let Eod = getVar({
-                           length: 2,
-                           name: "Eod",
-                           type: "number"
-                        })
-                        if (showDebug){
-                            console.log("Eod:" + Eod)
-                        }
+                tempoffset = offsetList[rc].end - NullFieldBitmapLength - 1
+                let lastOffset = tempoffset
+                let VariableLengthFieldCount = getVar({length: 2,name: "VariableLengthFieldCount",type: "number"})
+
+
+                let listOfOffsets = []
+                let listOfOffsetsRaw = []
+                let endRec = lastOffset
+                for (let varIndex=0; varIndex < VariableLengthFieldCount;varIndex++){
+
+                    tempoffset = lastOffset - 2
+                    lastOffset = tempoffset
+                    let VariableLengthFieldOffset = getVar({length: 2,name: "VariableLengthFieldOffset",type: "number"})
+                    listOfOffsetsRaw.push(VariableLengthFieldOffset)
+                    if ((varIndex == 0 ) || (listOfOffsetsRaw[varIndex] != listOfOffsetsRaw[varIndex - 1])) {
+                        listOfOffsets.push({relative_offset: VariableLengthFieldOffset,start: offsetList[rc].start + VariableLengthFieldOffset})
                     }
-                    console.log("")
-            //}
+                }
+
+                for (let varIndex=0; varIndex < listOfOffsets.length;varIndex++) {
+
+                    if (varIndex == (listOfOffsets.length - 1) ) {
+                        let varColData = listOfOffsets[ varIndex ]
+                        varColData.length = 2
+                        varColData.end = varColData.start + 2
+                    } else {
+                        let varColData = listOfOffsets[ varIndex ]
+                        let nextColData = listOfOffsets[ varIndex + 1 ]
+                        varColData.length = nextColData.relative_offset - varColData.relative_offset
+                        varColData.end = nextColData.start - 1
+                    }
+
+                }
+
+                for (let i=0;i<20;i++){
+                    tempoffset = lastOffset - 2
+                    lastOffset = tempoffset
+                    let Eod = getVar({length: 2,name: "Eod",type: "number"})
+                }
 
                 for (let varIndex=0; varIndex < listOfOffsets.length;varIndex++){
 
                     tempoffset = listOfOffsets[varIndex].start
                     if (listOfOffsets[varIndex].length  == 2) {
-                        let VariableLengthFieldOffset = getVar({
-                           length: listOfOffsets[varIndex].length ,
-                           name: "VariableLengthFieldOffset",
-                           type: "number"
-                        })
-                        if (showDebug) {
-                            console.log("Val:" + VariableLengthFieldOffset)
-                        }
+                        let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,name: "VariableLengthFieldOffset",type:"number"})
                         tableRecord[getFixedColName(pageNum, varIndex)] = VariableLengthFieldOffset
 
                     } else {
-                        let VariableLengthFieldOffset = getVar({
-                           length: listOfOffsets[varIndex].length ,
-                           name: "VariableLengthFieldOffset"
-                        })
-                        //console.log("Val:" + toUTF8Array(VariableLengthFieldOffset))
-                        if (showDebug) {
-                            console.log("Val:" + VariableLengthFieldOffset)
-                        }
+                        let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,name: "VariableLengthFieldOffset"})
                         tableRecord[getFixedColName(pageNum, varIndex)] = toUTF8Array(VariableLengthFieldOffset)
                     }
-
                 }
-
             }
-
-            console.log("")
-            console.log("")
-            console.log("")
-            console.log("")
-            console.log("")
-            console.log("")
         }
-        console.log("")
-        console.log("")
-
-
     }
     wholeDb.data = {}
 
