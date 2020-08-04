@@ -572,7 +572,7 @@ function getTableDefinitionForPage(pageNum) {
 // -----------------------------------------------------------------------
 function getFixedColName(pageNum, varIndex) {
     //zzz
-    return    wholeDb.tableDefinition[pageNum].colsInOrder[
+    return    "FIXED_" + wholeDb.tableDefinition[pageNum].colsInOrder[
         wholeDb.tableDefinition[pageNum].fixedColsList[varIndex]
     ].name
 }
@@ -586,7 +586,7 @@ function getFixedColName(pageNum, varIndex) {
 // -----------------------------------------------------------------------
 function getColName(pageNum, varIndex) {
     //zzz
-    return    (wholeDb.tableDefinition[pageNum].colsInOrder[varIndex].name).padEnd(25, ' ')
+    return    ((wholeDb.tableDefinition[pageNum].colsInOrder[varIndex].fixedLength?"FIXED_":"VAR_") + (wholeDb.tableDefinition[pageNum].colsInOrder[varIndex].name)).padEnd(25, ' ')
     //return varIndex
 }
 
@@ -723,15 +723,16 @@ function populateDataForTableDefinedOnPage(pageNum) {
                    type: "number"
                 })
 
+                let maskedFields = {}
                 for (let recIndex = 0 ; recIndex < wholeDb.tableDefinition[pageNum].__colCount; recIndex++) {
                     let maskBit = Math.pow(2, recIndex)
                     if (FieldMask & maskBit) {
-                        console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + " *******")
+                        maskedFields[getColName(pageNum,recIndex)] = "***********"
                     } else {
-                        console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + "" )
-
+                        maskedFields[getColName(pageNum,recIndex)] = ""
                     }
                 }
+                tableRecord._mask = maskedFields
 
                 tempoffset = offsetList[rc].end - NullFieldBitmapLength - 1
                 let lastOffset = tempoffset
@@ -788,9 +789,9 @@ function populateDataForTableDefinedOnPage(pageNum) {
             }
         }
     }
-    wholeDb.data = {}
+    wholeDb.tableDefinition[pageNum].data = {}
 
-    wholeDb.data[pageNum] = tableData
+    wholeDb.tableDefinition[pageNum].data = tableData
 }
 
 
