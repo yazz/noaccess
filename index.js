@@ -32,7 +32,7 @@ var binary              = fs.readFileSync(dbFileName);
 
 findDataPages()
 getTableDefinitionForPage(defnPage)
-getDataForTableOnPage(defnPage)
+populateDataForTableDefinedOnPage(defnPage)
 
 
 
@@ -214,7 +214,7 @@ function findDataPages() {
         }
     }
 
-    wholeDb.tableDataPages = listOfTableDefPages
+    wholeDb.tableDefinition = listOfTableDefPages
 
 }
 
@@ -242,27 +242,27 @@ function getTableDefinitionForPage(pageNum) {
 
 
     PageSignature = find(tempoffset, 2, "number")
-    wholeDb.tableDataPages[pageNum].PageSignature = PageSignature
+    wholeDb.tableDefinition[pageNum].PageSignature = PageSignature
     VC = find(tempoffset + 2, 2, "number")
-    wholeDb.tableDataPages[pageNum].VC = VC
+    wholeDb.tableDefinition[pageNum].VC = VC
     NextPage = find(tempoffset + 4, 4, "number")
-    wholeDb.tableDataPages[pageNum].NextPage = NextPage
+    wholeDb.tableDefinition[pageNum].NextPage = NextPage
 
 
     tempoffset = tempoffset + 8
 
 
     let TableDefinitionLength = find(tempoffset, 4, "number")
-    wholeDb.tableDataPages[pageNum].TableDefinitionLength = TableDefinitionLength
+    wholeDb.tableDefinition[pageNum].TableDefinitionLength = TableDefinitionLength
 
 
     let Numberofrows = find(tempoffset + 8, 4, "number")
-    wholeDb.tableDataPages[pageNum].Numberofrows = Numberofrows
+    wholeDb.tableDefinition[pageNum].Numberofrows = Numberofrows
 
 
     tempoffset = tempoffset + 12
     let Autonumber = find(tempoffset, 4, "number")
-    wholeDb.tableDataPages[pageNum].Autonumber = Autonumber
+    wholeDb.tableDefinition[pageNum].Autonumber = Autonumber
 
 
 
@@ -274,7 +274,7 @@ function getTableDefinitionForPage(pageNum) {
         name: "Autonumber Increment",
         type: "number"
     })
-    wholeDb.tableDataPages[pageNum].Autonumber = Autonumber
+    wholeDb.tableDefinition[pageNum].Autonumber = Autonumber
 
 
     getVar({
@@ -302,7 +302,7 @@ function getTableDefinitionForPage(pageNum) {
         type: "number",
         showas: "hex"
     })
-    wholeDb.tableDataPages[pageNum].Flags = Flags
+    wholeDb.tableDefinition[pageNum].Flags = Flags
 
 
     let NextColumnId = getVar({
@@ -310,7 +310,7 @@ function getTableDefinitionForPage(pageNum) {
         name: "Next Column Id",
         type: "number"
     })
-    wholeDb.tableDataPages[pageNum].NextColumnId = NextColumnId
+    wholeDb.tableDefinition[pageNum].NextColumnId = NextColumnId
 
 
     let VariableColumns = getVar({
@@ -318,7 +318,7 @@ function getTableDefinitionForPage(pageNum) {
         name: "Variable columns",
         type: "number"
     })
-    wholeDb.tableDataPages[pageNum].__VariableColumns = VariableColumns
+    wholeDb.tableDefinition[pageNum].__VariableColumns = VariableColumns
 
 
     let colCount = getVar({
@@ -327,7 +327,7 @@ function getTableDefinitionForPage(pageNum) {
         type: "number",
         show: true
     })
-    wholeDb.tableDataPages[pageNum].__colCount = colCount
+    wholeDb.tableDefinition[pageNum].__colCount = colCount
 
 
     let indexCount = getVar({
@@ -335,14 +335,14 @@ function getTableDefinitionForPage(pageNum) {
         name: "Index Count",
         type: "number"
     })
-    wholeDb.tableDataPages[pageNum].indexCount = indexCount
+    wholeDb.tableDefinition[pageNum].indexCount = indexCount
 
     let RealIndexCount = getVar({
         length: 4,
         name: "Real Index Count",
         type: "number"
     })
-    wholeDb.tableDataPages[pageNum].RealIndexCount = RealIndexCount
+    wholeDb.tableDefinition[pageNum].RealIndexCount = RealIndexCount
 
     let RowPageMapRecord = getVar({
         length: 1,
@@ -350,7 +350,7 @@ function getTableDefinitionForPage(pageNum) {
         type: "number",
         show: true
     })
-    wholeDb.tableDataPages[pageNum].RowPageMapRecord = RowPageMapRecord
+    wholeDb.tableDefinition[pageNum].RowPageMapRecord = RowPageMapRecord
 
     var RowPageMapPage = getVar({
         length: 3,
@@ -358,7 +358,7 @@ function getTableDefinitionForPage(pageNum) {
         type: "number",
         show: true
     })
-    wholeDb.tableDataPages[pageNum].RowPageMapPage = RowPageMapPage
+    wholeDb.tableDefinition[pageNum].RowPageMapPage = RowPageMapPage
 
     let FreeSpacePageMapRecord = getVar({
         length: 1,
@@ -366,7 +366,7 @@ function getTableDefinitionForPage(pageNum) {
         type: "number",
         show: true
     })
-    wholeDb.tableDataPages[pageNum].FreeSpacePageMapRecord = FreeSpacePageMapRecord
+    wholeDb.tableDefinition[pageNum].FreeSpacePageMapRecord = FreeSpacePageMapRecord
 
     let FreeSpacePageMapPage = getVar({
         length: 3,
@@ -374,7 +374,7 @@ function getTableDefinitionForPage(pageNum) {
         type: "number",
         show: true
     })
-    wholeDb.tableDataPages[pageNum].FreeSpacePageMapPage = FreeSpacePageMapPage
+    wholeDb.tableDefinition[pageNum].FreeSpacePageMapPage = FreeSpacePageMapPage
 
     //
     // skip indexes
@@ -485,7 +485,7 @@ function getTableDefinitionForPage(pageNum) {
     console.log(" ")
     console.log(" ")
 
-    wholeDb.tableDataPages[pageNum].colsInOrder = {}
+    wholeDb.tableDefinition[pageNum].colsInOrder = {}
     for (var x=0; x< colCount; x++) {
 
         let colLen = getVar({
@@ -509,10 +509,10 @@ function getTableDefinitionForPage(pageNum) {
 
         columns[x].name =  tttt
         columnNames[tttt] = x
-        wholeDb.tableDataPages[pageNum].colsInOrder[x] = columns[x]
+        wholeDb.tableDefinition[pageNum].colsInOrder[x] = columns[x]
     }
-    wholeDb.tableDataPages[pageNum].columnNames = columnNames
-    wholeDb.tableDataPages[pageNum].fixedColsList = fixedColsList
+    wholeDb.tableDefinition[pageNum].columnNames = columnNames
+    wholeDb.tableDefinition[pageNum].fixedColsList = fixedColsList
 
 
 
@@ -557,7 +557,6 @@ function getTableDefinitionForPage(pageNum) {
 
     console.log("")
     console.log("...............")
-    return wholeDb.tableDataPages[pageNum]
 }
 
 
@@ -573,8 +572,8 @@ function getTableDefinitionForPage(pageNum) {
 // -----------------------------------------------------------------------
 function getFixedColName(pageNum, varIndex) {
     //zzz
-    return    wholeDb.tableDataPages[pageNum].colsInOrder[
-        wholeDb.tableDataPages[pageNum].fixedColsList[varIndex]
+    return    wholeDb.tableDefinition[pageNum].colsInOrder[
+        wholeDb.tableDefinition[pageNum].fixedColsList[varIndex]
     ].name
 }
 
@@ -587,7 +586,7 @@ function getFixedColName(pageNum, varIndex) {
 // -----------------------------------------------------------------------
 function getColName(pageNum, varIndex) {
     //zzz
-    return    (wholeDb.tableDataPages[pageNum].colsInOrder[varIndex].name).padEnd(25, ' ')
+    return    (wholeDb.tableDefinition[pageNum].colsInOrder[varIndex].name).padEnd(25, ' ')
     //return varIndex
 }
 
@@ -615,20 +614,10 @@ function toUTF8Array(input) {
 //
 //
 // -----------------------------------------------------------------------
-function getDataForTableOnPage(pageNum) {
-    let tableData = []
+function populateDataForTableDefinedOnPage(pageNum) {
 
-    if (showDebug){
-        console.log("")
-        console.log("")
-        console.log("")
-        console.log("----------------------------------------------------------------------------------------------------------------")
-        console.log("------                                    DATA FOR TABLE                                    ")
-        console.log("------                                    page: " + pageNum + "                               ")
-        console.log("----------------------------------------------------------------------------------------------------------------")
-    }
-
-    let listOfPages = wholeDb.tableDataPages[pageNum]
+    let tableData   = []
+    let listOfPages = wholeDb.tableDefinition[pageNum]
 
 
 
@@ -692,7 +681,7 @@ function getDataForTableOnPage(pageNum) {
            name: "RecordCount",
            type: "number"
         })
-        let NullFieldBitmapLength = Math.floor((wholeDb.tableDataPages[pageNum].__colCount + 7) / 8)
+        let NullFieldBitmapLength = Math.floor((wholeDb.tableDefinition[pageNum].__colCount + 7) / 8)
         //Math.pow(2, 0)
 
         let offsetList = []
@@ -739,11 +728,11 @@ function getDataForTableOnPage(pageNum) {
 
 
 
-        let NumCols = Object.keys(wholeDb.tableDataPages[pageNum].colsInOrder).length
-        //console.log(wholeDb.tableDataPages[pageNum].colsInOrder)
-        let numFixed = wholeDb.tableDataPages[pageNum].__colCount - wholeDb.tableDataPages[pageNum].__VariableColumns
+        let NumCols = Object.keys(wholeDb.tableDefinition[pageNum].colsInOrder).length
+        //console.log(wholeDb.tableDefinition[pageNum].colsInOrder)
+        let numFixed = wholeDb.tableDefinition[pageNum].__colCount - wholeDb.tableDefinition[pageNum].__VariableColumns
         console.log("                           " +
-            numFixed + " Fixed + " + wholeDb.tableDataPages[pageNum].__VariableColumns + " Variable  = " + wholeDb.tableDataPages[pageNum].__colCount + " cols")
+            numFixed + " Fixed + " + wholeDb.tableDefinition[pageNum].__VariableColumns + " Variable  = " + wholeDb.tableDefinition[pageNum].__colCount + " cols")
         let fixedCount = 0
         console.log("                           RecordCount: " + RecordCount)
         console.log("                           FreeSpace: " + FreeSpace)
@@ -774,12 +763,12 @@ function getDataForTableOnPage(pageNum) {
                 console.log("Fixed col data:")
                 console.log("------")
                 //for (let rowIndex=0;rowIndex < RowCount; rowIndex++){
-                    for (let yy=0;yy < wholeDb.tableDataPages[pageNum].__colCount; yy++){
-                        if (wholeDb.tableDataPages[pageNum].colsInOrder[yy].fixedLength) {
-                            //console.log("Fixed col: " + wholeDb.tableDataPages[pageNum].colsInOrder[yy].name + " = " + wholeDb.tableDataPages[pageNum].colsInOrder[yy].length + " bytes")
+                    for (let yy=0;yy < wholeDb.tableDefinition[pageNum].__colCount; yy++){
+                        if (wholeDb.tableDefinition[pageNum].colsInOrder[yy].fixedLength) {
+                            //console.log("Fixed col: " + wholeDb.tableDefinition[pageNum].colsInOrder[yy].name + " = " + wholeDb.tableDefinition[pageNum].colsInOrder[yy].length + " bytes")
                             let colVal = getVar({
-                               length: wholeDb.tableDataPages[pageNum].colsInOrder[yy].length,
-                               name: wholeDb.tableDataPages[pageNum].colsInOrder[yy].name,
+                               length: wholeDb.tableDefinition[pageNum].colsInOrder[yy].length,
+                               name: wholeDb.tableDefinition[pageNum].colsInOrder[yy].name,
                                type: "number"
                             })
                         }
@@ -787,7 +776,7 @@ function getDataForTableOnPage(pageNum) {
 
                     console.log("")
 
-                    let NullFieldBitmapLength = Math.floor((wholeDb.tableDataPages[pageNum].__colCount + 7) / 8)
+                    let NullFieldBitmapLength = Math.floor((wholeDb.tableDefinition[pageNum].__colCount + 7) / 8)
                     //Math.pow(2, 0)
                     //zzz
                     tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
@@ -800,7 +789,7 @@ function getDataForTableOnPage(pageNum) {
                        type: "number"
                     })
                     console.log("FieldMask: " + FieldMask)
-                    for (let recIndex = 0 ; recIndex < wholeDb.tableDataPages[pageNum].__colCount; recIndex++) {
+                    for (let recIndex = 0 ; recIndex < wholeDb.tableDefinition[pageNum].__colCount; recIndex++) {
                         let maskBit = Math.pow(2, recIndex)
                         if (FieldMask & maskBit) {
                             console.log(getColName(pageNum,recIndex) + "   :   " + recIndex + " *******")
