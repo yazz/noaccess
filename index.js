@@ -616,53 +616,27 @@ function toUTF8Array(input) {
 // -----------------------------------------------------------------------
 function populateDataForTableDefinedOnPage(pageNum) {
 
-    let tableData   = []
-    let listOfPages = wholeDb.tableDefinition[pageNum]
+    let tableData           = []                                    // list of rows of data
+    let tableDefinitions    = wholeDb.tableDefinition[pageNum]      // table definitions
 
+    //
+    // find all the data pages for this table
+    //
+    for (let dataOffset = 0; dataOffset < tableDefinitions.pages.length; dataOffset++ ) {
 
-
-    console.log("Table defn: " + pageNum + " has data pages " + JSON.stringify(listOfPages.pages,null,2))
-
-    for (let dataOffset = 0;dataOffset< listOfPages.pages.length;dataOffset++) {
-        console.log("")
-        console.log("")
-        //console.log("dataOffset: " + dataOffset )
-        let dataPageNum = listOfPages.pages[dataOffset]
-        console.log( "                           /------------------------------\\")
-        console.log( "                           | data page: " + dataPageNum )
-        console.log( "                           \\------------------------------/")
-        console.log( "")
+        let dataPageNum = tableDefinitions.pages[dataOffset]
         tempoffset = 4096 * dataPageNum
 
-
-
         let DataPageSignature = getVar({
-           length: 1,
-           name: "DataPageSignature",
-           type: "number",
-           showas: "hex"
-           , show: false})
+           length:   1,
+           name:    "DataPageSignature",
+           type:    "number",
+           showas:  "hex"
+       })
 
-        getVar({
-           length: 1,
-           name: "Unknown",
-           type: "number"
-           , show: false
-        })
-
-        let FreeSpace = getVar({
-            length: 2,
-            name: "Free Space",
-            type: "number"
-            , show: false
-        })
-
-        let tdef_pg = getVar({
-           length: 3,
-           name: "tdef_pg",
-           type: "number"
-           , show: false
-        })
+        getVar({ length: 1, name: "Unknown", type: "number"})
+        let FreeSpace = getVar({length: 2, name: "Free Space", type: "number"})
+        let tdef_pg = getVar({length: 3,name: "tdef_pg",type: "number"})
 
         let pgr = getVar({
            length: 1,
@@ -682,7 +656,6 @@ function populateDataForTableDefinedOnPage(pageNum) {
            type: "number"
         })
         let NullFieldBitmapLength = Math.floor((wholeDb.tableDefinition[pageNum].__colCount + 7) / 8)
-        //Math.pow(2, 0)
 
         let offsetList = []
         let lastEnd = (4096 * dataPageNum) + 4096 - 1
