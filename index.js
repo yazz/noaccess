@@ -516,47 +516,6 @@ function getTableDefinitionForPage(pageNum) {
 
 
 
-    //
-    //
-    //
-
-    console.log("...............")
-    console.log("")
-    tempoffset = (RowPageMapPage * 4096) + (64 * RowPageMapRecord)//(RowPageMapPage * 4096) //+ (2 * RecordCount)
-    console.log("RowPageMapPage: " + RowPageMapPage)
-    console.log("RowPageMapRecord: " + RowPageMapRecord)
-    console.log("offset: " + tempoffset)
-
-    let mapType = getVar({
-        length: 1,
-        name: "mapType",
-        type: "number"
-    })
-
-    console.log("mapType: " + mapType)
-
-    for (let rt=0;rt<17;rt++) {
-
-        var PageUsageMapRecord = getVar({
-            length: 0,
-            name: "Page Usage Map Record",
-            type: "number",
-            show: true
-        })
-
-        var PageUsageMapPage = getVar({
-            length: 4,
-            name: "Page Usage Map Page",
-            type: "number",
-            show: true
-        })
-        console.log("PageUsageMapPage: " + PageUsageMapPage + ":" + PageUsageMapRecord)
-
-
-    }
-
-    console.log("")
-    console.log("...............")
 }
 
 
