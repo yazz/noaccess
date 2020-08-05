@@ -575,15 +575,15 @@ function toUTF8Array(input) {
 // -----------------------------------------------------------------------
 function populateDataForTableDefinedOnPage(pageNum) {
 
-    let tableData           = []                                    // list of rows of data
-    let tableDefinitions    = wholeDb.tableDefinition[pageNum]      // table definitions
+    let tableData           = []                                   // list of rows of data
+    let tableDefinition    = wholeDb.tableDefinition[pageNum]      // table definitions
 
     //
     // find all the data pages for this table
     //
-    for (let dataOffset = 0; dataOffset < tableDefinitions.pages.length; dataOffset++ ) {
+    for (let dataOffset = 0; dataOffset < tableDefinition.pages.length; dataOffset++ ) {
 
-        let dataPageNum = tableDefinitions.pages[dataOffset]
+        let dataPageNum = tableDefinition.pages[dataOffset]
         tempoffset = 4096 * dataPageNum
 
         let DataPageSignature = getVar({
