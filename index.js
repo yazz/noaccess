@@ -164,6 +164,8 @@ function getColumnType(colType) {
 
 
 
+
+
 // -----------------------------------------------------------------------
 //
 //
@@ -171,64 +173,48 @@ function getColumnType(colType) {
 //
 // -----------------------------------------------------------------------
 function findDataPages() {
+    let listOfTableDefPages = {}
     for (let currentPage = 0 ; currentPage < numPages; currentPage++){
-        loadDataPage(currentPage)
-    }
-}
+        tempoffset = 4096 * currentPage
+        let PageSignature = getVar({
+              length: 1,
+              name: "Page Type",
+              type: "number"
+           })
+        if (PageSignature == 0x01) {
+           getVar({
+              length: 1,
+              name: "Unknown",
+              type: "number"
+           })
 
-// -----------------------------------------------------------------------
-//
-//
-//
-//
-// -----------------------------------------------------------------------
-function loadDataPage(currentPage) {
-    let listOfTableDefPages
-    if  (!wholeDb.tableDefinition) {
-        listOfTableDefPages = {}
-        wholeDb.tableDefinition = listOfTableDefPages
-    } else {
-        listOfTableDefPages = wholeDb.tableDefinition
-    }
+            getVar({
+               length: 2,
+               name: "Free Space",
+               type: "number"
+           })
+           let tdef_pg = getVar({
+              length: 3,
+              name: "tdef_pg",
+              type: "number"
+           })
 
-    tempoffset = 4096 * currentPage
-    let PageSignature = getVar({
-          length: 1,
-          name: "Page Type",
-          type: "number"
-       })
-    if (PageSignature == 0x01) {
-       getVar({
-          length: 1,
-          name: "Unknown",
-          type: "number"
-       })
+           if (tdef_pg < 2) {
 
-        getVar({
-           length: 2,
-           name: "Free Space",
-           type: "number"
-       })
-       let tdef_pg = getVar({
-          length: 3,
-          name: "tdef_pg",
-          type: "number"
-       })
+           } else if (tdef_pg > 10000) {
 
-       if (tdef_pg < 2) {
+           } else if (!listOfTableDefPages[tdef_pg]) {
+               listOfTableDefPages[tdef_pg] = {
+                   pages: [currentPage]
+               }
 
-       } else if (tdef_pg > 10000) {
-
-       } else if (!listOfTableDefPages[tdef_pg]) {
-           listOfTableDefPages[tdef_pg] = {
-               pages: [currentPage]
+           } else {
+               listOfTableDefPages[tdef_pg].pages.push(currentPage)
            }
-
-       } else {
-           listOfTableDefPages[tdef_pg].pages.push(currentPage)
-       }
+        }
     }
 
+    wholeDb.tableDefinition = listOfTableDefPages
 
 }
 
