@@ -164,8 +164,6 @@ function getColumnType(colType) {
 
 
 
-
-
 // -----------------------------------------------------------------------
 //
 //
@@ -173,48 +171,64 @@ function getColumnType(colType) {
 //
 // -----------------------------------------------------------------------
 function findDataPages() {
-    let listOfTableDefPages = {}
     for (let currentPage = 0 ; currentPage < numPages; currentPage++){
-        tempoffset = 4096 * currentPage
-        let PageSignature = getVar({
-              length: 1,
-              name: "Page Type",
-              type: "number"
-           })
-        if (PageSignature == 0x01) {
-           getVar({
-              length: 1,
-              name: "Unknown",
-              type: "number"
-           })
+        loadDataPage(currentPage)
+    }
+}
 
-            getVar({
-               length: 2,
-               name: "Free Space",
-               type: "number"
-           })
-           let tdef_pg = getVar({
-              length: 3,
-              name: "tdef_pg",
-              type: "number"
-           })
-
-           if (tdef_pg < 2) {
-
-           } else if (tdef_pg > 10000) {
-
-           } else if (!listOfTableDefPages[tdef_pg]) {
-               listOfTableDefPages[tdef_pg] = {
-                   pages: [currentPage]
-               }
-
-           } else {
-               listOfTableDefPages[tdef_pg].pages.push(currentPage)
-           }
-        }
+// -----------------------------------------------------------------------
+//
+//
+//
+//
+// -----------------------------------------------------------------------
+function loadDataPage(currentPage) {
+    let listOfTableDefPages
+    if  (!wholeDb.tableDefinition) {
+        listOfTableDefPages = {}
+        wholeDb.tableDefinition = listOfTableDefPages
+    } else {
+        listOfTableDefPages = wholeDb.tableDefinition
     }
 
-    wholeDb.tableDefinition = listOfTableDefPages
+    tempoffset = 4096 * currentPage
+    let PageSignature = getVar({
+          length: 1,
+          name: "Page Type",
+          type: "number"
+       })
+    if (PageSignature == 0x01) {
+       getVar({
+          length: 1,
+          name: "Unknown",
+          type: "number"
+       })
+
+        getVar({
+           length: 2,
+           name: "Free Space",
+           type: "number"
+       })
+       let tdef_pg = getVar({
+          length: 3,
+          name: "tdef_pg",
+          type: "number"
+       })
+
+       if (tdef_pg < 2) {
+
+       } else if (tdef_pg > 10000) {
+
+       } else if (!listOfTableDefPages[tdef_pg]) {
+           listOfTableDefPages[tdef_pg] = {
+               pages: [currentPage]
+           }
+
+       } else {
+           listOfTableDefPages[tdef_pg].pages.push(currentPage)
+       }
+    }
+
 
 }
 
