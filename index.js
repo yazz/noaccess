@@ -31,6 +31,7 @@ var binary              = fs.readFileSync(dbFileName);
 //
 
 findDataPages()
+//loadDataPage(defnPage)
 getTableDefinitionForPage(defnPage)
 populateDataForTableDefinedOnPage(defnPage)
 
@@ -183,12 +184,8 @@ function findDataPages() {
 //
 // -----------------------------------------------------------------------
 function loadDataPage(currentPage) {
-    let listOfTableDefPages
     if  (!wholeDb.tableDefinition) {
-        listOfTableDefPages = {}
-        wholeDb.tableDefinition = listOfTableDefPages
-    } else {
-        listOfTableDefPages = wholeDb.tableDefinition
+        wholeDb.tableDefinition = {}
     }
 
     tempoffset = 4096 * currentPage
@@ -219,13 +216,13 @@ function loadDataPage(currentPage) {
 
        } else if (tdef_pg > 10000) {
 
-       } else if (!listOfTableDefPages[tdef_pg]) {
-           listOfTableDefPages[tdef_pg] = {
+       } else if (!wholeDb.tableDefinition[tdef_pg]) {
+           wholeDb.tableDefinition[tdef_pg] = {
                pages: [currentPage]
            }
 
        } else {
-           listOfTableDefPages[tdef_pg].pages.push(currentPage)
+           wholeDb.tableDefinition[tdef_pg].pages.push(currentPage)
        }
     }
 
@@ -255,11 +252,11 @@ function getTableDefinitionForPage(pageNum) {
     }
 
 
-    PageSignature = find(tempoffset, 2, "number")
+    let PageSignature = find(tempoffset, 2, "number")
     wholeDb.tableDefinition[pageNum].PageSignature = PageSignature
-    VC = find(tempoffset + 2, 2, "number")
+    let VC = find(tempoffset + 2, 2, "number")
     wholeDb.tableDefinition[pageNum].VC = VC
-    NextPage = find(tempoffset + 4, 4, "number")
+    let NextPage = find(tempoffset + 4, 4, "number")
     wholeDb.tableDefinition[pageNum].NextPage = NextPage
 
 
