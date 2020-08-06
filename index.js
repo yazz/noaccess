@@ -436,7 +436,7 @@ function getTableDefinitionForPage(pageNum) {
         name: "Variable columns",
         type: "number"
     })
-    wholeDb.table_pages[pageNum].definition.__VariableColumns = VariableColumns
+    wholeDb.table_pages[pageNum].definition.VariableColumnsCount = VariableColumns
 
 
     let colCount = getVar({
@@ -445,7 +445,7 @@ function getTableDefinitionForPage(pageNum) {
         type: "number",
         show: true
     })
-    wholeDb.table_pages[pageNum].definition.__colCount = colCount
+    wholeDb.table_pages[pageNum].definition.TotalColumnCount = colCount
 
 
     let indexCount = getVar({
@@ -519,7 +519,7 @@ function getTableDefinitionForPage(pageNum) {
         })
         newColumn.colType = getColumnType(colType)
         //console.log("Col type: " + getColumnType(colType))
-        
+
         columns[x] = newColumn
         getVar({useJetVersion: 4,length: 4,name: "Unknown"})
         let ColID = getVar({length: 2,name: "Col ID",type: "number"})
@@ -701,7 +701,7 @@ function populateDataForTableDefinedOnPage(pageNum) {
        let pgr = getVar({length: 1,name: "tdef_pg record",type: "number"})
        let Owner = getVar({length: 4,name: "Unknown",type: "number"})
        let RecordCount = getVar({length: 2,name: "RecordCount",type: "number"})
-       let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].__colCount + 7) / 8)
+       let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].TotalColumnCount + 7) / 8)
 
        //
        // Since we are given the record count for how many records are stored
@@ -751,7 +751,8 @@ function populateDataForTableDefinedOnPage(pageNum) {
         // stored in "offsetList" we can go through all the records
         //
         let NumCols     = Object.keys(wholeDb.table_pages[pageNum].colsInOrder).length
-        let numFixed    = wholeDb.table_pages[pageNum].__colCount - wholeDb.table_pages[pageNum].__VariableColumns
+        let numFixed    = wholeDb.table_pages[pageNum].definition.TotalColumnCount -
+                            wholeDb.table_pages[pageNum].definition.VariableColumnsCount
         let fixedCount  = 0
 
         for (let rc = 0;rc < RecordCount; rc ++) {
@@ -761,7 +762,7 @@ function populateDataForTableDefinedOnPage(pageNum) {
             if (offsetList[rc].valid) {
                 tempoffset = offsetList[rc].start
                 let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
-                for (let yy=0;yy < wholeDb.table_pages[pageNum].__colCount; yy++){
+                for (let yy=0;yy < wholeDb.table_pages[pageNum].definition.TotalColumnCount; yy++){
                     if (wholeDb.table_pages[pageNum].colsInOrder[yy].fixedLength) {
                         let colVal = getVar({
                            length: wholeDb.table_pages[pageNum].colsInOrder[yy].length,
@@ -771,7 +772,7 @@ function populateDataForTableDefinedOnPage(pageNum) {
                     }
                 }
 
-                let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].__colCount + 7) / 8)
+                let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
                 tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
 
@@ -782,7 +783,7 @@ function populateDataForTableDefinedOnPage(pageNum) {
                 })
 
                 let maskedFields = {}
-                for (let recIndex = 0 ; recIndex < wholeDb.table_pages[pageNum].__colCount; recIndex++) {
+                for (let recIndex = 0 ; recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount; recIndex++) {
                     let maskBit = Math.pow(2, recIndex)
                     if (FieldMask & maskBit) {
                         maskedFields[getColName(pageNum,recIndex)] = "***********"
