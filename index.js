@@ -275,14 +275,18 @@ function findDataPages() {
 //                       |  getTableDefinitionForPage |
 //                       +----------------------------+
 //
+// This reads the table definition and stores it in "wholeDb". The
+// originating MS Access structure for table definition page is:
+//
+//
 // +-------------------------------------------------------------------------+
 // | Jet4 Table Definition Header
 // +------+---------+-------------+------------------------------------------+
 // | data | length  | name        | description                              |
 // +------+---------+-------------+------------------------------------------+
-// | 0x02 | 1 bytes | page_type   | 0x02 indicate a tabledef page            |
+// | 0x02 | 1 bytes | page_type   | 0x02 indicate a table defn page            |
 // |      | 1 bytes | unknown     |                                          |
-// |      | 2 bytes | tdef_id     | (jet4) Free space in this page minus 8   |
+// |      | 2 bytes | tdef_id     | (jet4) Free space on this page minus 8   |
 // | 0x00 | 4 bytes | next_pg     | Next tdef page pointer (0 if none)       |
 // +------+---------+-------------+------------------------------------------+
 //
@@ -352,12 +356,13 @@ function getTableDefinitionForPage(pageNum) {
     //
     // get the table header
     //
+    wholeDb.tableDefinition[pageNum].header = {}
     let PageSignature = find(tempoffset, 1, "number")  // 0x02 means table deinition page
-    wholeDb.tableDefinition[pageNum].PageSignature = PageSignature
-    VC = find(tempoffset + 2, 2, "number")
-    wholeDb.tableDefinition[pageNum].freeSpaceInThisPageMinus8 = VC
-    NextPage = find(tempoffset + 4, 4, "number")
-    wholeDb.tableDefinition[pageNum].NextPage = NextPage
+    wholeDb.tableDefinition[pageNum].header.PageSignature = PageSignature
+    let freeBytes = find(tempoffset + 2, 2, "number")
+    wholeDb.tableDefinition[pageNum].header.freeSpaceInThisPageMinus8 = freeBytes
+    let NextPage = find(tempoffset + 4, 4, "number")
+    wholeDb.tableDefinition[pageNum].header.NextPage = NextPage
     tempoffset = tempoffset + 8
 
 
