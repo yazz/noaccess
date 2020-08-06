@@ -485,7 +485,7 @@ function getTableDefinitionForPage(pageNum) {
         newColumn.autonumber = autonumber
         newColumn.ColFlags = "0x" + ColFlags[1].toString(16) + ":0x" + ColFlags[0].toString(16)
 
-        columns[x] = newColumn
+        columns[ColID] = newColumn
 
     }
     console.log(" ")
@@ -705,7 +705,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                 let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
-                tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
+                tempoffset = offsetList[rc].end - NullFieldBitmapLength
 
                 let FieldMask = getVar({
                    length: NullFieldBitmapLength,
