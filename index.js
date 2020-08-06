@@ -249,11 +249,11 @@ function findDataPages() {
 
             } else if (!listOfTableDefPages[tdef_pg]) {
                 listOfTableDefPages[tdef_pg] = {
-                    pages: [{pagenum: currentPage, recordcount: RecordCount}]
+                    date_pages: [{pagenum: currentPage, recordcount: RecordCount}]
                 }
 
             } else {
-               listOfTableDefPages[tdef_pg].pages.push({pagenum: currentPage, recordcount: RecordCount})
+               listOfTableDefPages[tdef_pg].date_pages.push({pagenum: currentPage, recordcount: RecordCount})
             }
         }
     }
@@ -702,11 +702,11 @@ function populateDataForTableDefinedOnPage(pageNum) {
 
     //
     // find all the data pages for this table. stored in
-    // "wholeDb.tableDefinition.pages[  pageNum  ]"
+    // "wholeDb.tableDefinition.date_pages[  pageNum  ]"
     //
-    for (let dataPageIndex = 0; dataPageIndex < tableDefinition.pages.length; dataPageIndex++ ) {
+    for (let dataPageIndex = 0; dataPageIndex < tableDefinition.date_pages.length; dataPageIndex++ ) {
 
-        let dataPageNum = tableDefinition.pages[dataPageIndex]
+        let dataPageNum = tableDefinition.date_pages[dataPageIndex]
         tempoffset = 4096 * dataPageNum
 
         let DataPageSignature = getVar({
