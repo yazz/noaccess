@@ -508,7 +508,7 @@ function getTableDefinitionForPage(pageNum) {
     console.log(" ")
     console.log(" ")
 
-    wholeDb.table_pages[pageNum].colsInOrder = {}
+    wholeDb.table_pages[pageNum].col_defns = {}
     for (var x=0; x< colCount; x++) {
 
         let colLen = getVar({
@@ -532,7 +532,7 @@ function getTableDefinitionForPage(pageNum) {
 
         columns[x].name =  tttt
         columnNames[tttt] = x
-        wholeDb.table_pages[pageNum].colsInOrder[x] = columns[x]
+        wholeDb.table_pages[pageNum].col_defns[x] = columns[x]
     }
     wholeDb.table_pages[pageNum].columnNames = columnNames
     wholeDb.table_pages[pageNum].fixedColsList = fixedColsList
@@ -554,7 +554,7 @@ function getTableDefinitionForPage(pageNum) {
 // -----------------------------------------------------------------------
 function getFixedColName(pageNum, varIndex) {
     //zzz
-    return    "FIXED_" + wholeDb.table_pages[pageNum].colsInOrder[
+    return    "FIXED_" + wholeDb.table_pages[pageNum].col_defns[
         wholeDb.table_pages[pageNum].fixedColsList[varIndex]
     ].name
 }
@@ -568,7 +568,7 @@ function getFixedColName(pageNum, varIndex) {
 // -----------------------------------------------------------------------
 function getColName(pageNum, varIndex) {
     //zzz
-    return    ((wholeDb.table_pages[pageNum].colsInOrder[varIndex].fixedLength?"FIXED_":"VAR_") + (wholeDb.table_pages[pageNum].colsInOrder[varIndex].name)).padEnd(25, ' ')
+    return    ((wholeDb.table_pages[pageNum].col_defns[varIndex].fixedLength?"FIXED_":"VAR_") + (wholeDb.table_pages[pageNum].col_defns[varIndex].name)).padEnd(25, ' ')
     //return varIndex
 }
 
@@ -680,7 +680,7 @@ function populateDataForTableDefinedOnPage(pageNum) {
         // Now that we have all the positions of the records within this data page
         // stored in "offsetList" we can go through all the records
         //
-        let NumCols     = Object.keys(wholeDb.table_pages[pageNum].colsInOrder).length
+        let NumCols     = Object.keys(wholeDb.table_pages[pageNum].col_defns).length
         let numFixed    = wholeDb.table_pages[pageNum].definition.TotalColumnCount -
                             wholeDb.table_pages[pageNum].definition.VariableColumnsCount
         let fixedCount  = 0
@@ -693,10 +693,10 @@ function populateDataForTableDefinedOnPage(pageNum) {
                 tempoffset = offsetList[rc].start
                 let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
                 for (let yy=0;yy < wholeDb.table_pages[pageNum].definition.TotalColumnCount; yy++){
-                    if (wholeDb.table_pages[pageNum].colsInOrder[yy].fixedLength) {
+                    if (wholeDb.table_pages[pageNum].col_defns[yy].fixedLength) {
                         let colVal = getVar({
-                           length: wholeDb.table_pages[pageNum].colsInOrder[yy].length,
-                           name: wholeDb.table_pages[pageNum].colsInOrder[yy].name,
+                           length: wholeDb.table_pages[pageNum].col_defns[yy].length,
+                           name: wholeDb.table_pages[pageNum].col_defns[yy].name,
                            type: "number"
                         })
                     }
