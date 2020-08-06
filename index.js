@@ -473,27 +473,9 @@ function getTableDefinitionForPage(pageNum) {
             autonumber = true
         }
 
-        getVar({
-            useJetVersion: 4,
-            length: 4,
-            name: "Unknown"
-            ,
-            show: false
-        })
-        let FixedOffset = getVar({
-            length: 2,
-            name: "Fixed offset",
-            type: "number"
-            ,
-            show: false
-        })
-        let colDataLen = getVar({
-            length: 2,
-            name: "Length",
-            type: "number"
-            ,
-            show: false
-        })
+        getVar({useJetVersion: 4,length: 4,name: "Unknown"})
+        let FixedOffset = getVar({length: 2,name: "Fixed offset",type: "number"})
+        let colDataLen = getVar({length: 2,name: "Length",type: "number"})
         newColumn.ColID = ColID
         newColumn.length = colDataLen
         newColumn.FixedOffset = FixedOffset
