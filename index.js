@@ -264,35 +264,43 @@ function findDataPages() {
 
 
 
+
+
+
+
+
 // -----------------------------------------------------------------------
 //
 //                       +----------------------------+
 //                       |  getTableDefinitionForPage |
 //                       +----------------------------+
 //
-//
+// +-------------------------------------------------------------------------+
+// | Jet4 Table Definition Header
+// +------+---------+-------------+------------------------------------------+
+// | data | length  | name        | description                              |
+// +------+---------+-------------+------------------------------------------+
+// | 0x02 | 1 bytes | page_type   | 0x02 indicate a tabledef page            |
+// |      | 1 bytes | unknown     |                                          |
+// |      | 2 bytes | tdef_id     | (jet4) Free space in this page minus 8   |
+// | 0x00 | 4 bytes | next_pg     | Next tdef page pointer (0 if none)       |
+// +------+---------+-------------+------------------------------------------+
 //
 //
 //
 // -----------------------------------------------------------------------
 function getTableDefinitionForPage(pageNum) {
 
+    //
+    // go to the page which defines the table
+    //
     tempoffset = 4096 * pageNum
-    if (showDebug){
-        console.log("")
-        console.log("")
-        console.log("")
-        console.log("----------------------------------------------------------------------------------------------------------------")
-        console.log("------                                    TABLE DEFNS PAGE HEADER                                     ----------")
-        console.log("------                                    offset: " + tempoffset + "                               ")
-        console.log("----------------------------------------------------------------------------------------------------------------")
-    }
 
 
-    PageSignature = find(tempoffset, 2, "number")
+    let PageSignature = find(tempoffset, 1, "number")  // 0x02 means table deinition page
     wholeDb.tableDefinition[pageNum].PageSignature = PageSignature
     VC = find(tempoffset + 2, 2, "number")
-    wholeDb.tableDefinition[pageNum].VC = VC
+    wholeDb.tableDefinition[pageNum].freeSpaceInThisPageMinus8 = VC
     NextPage = find(tempoffset + 4, 4, "number")
     wholeDb.tableDefinition[pageNum].NextPage = NextPage
 
