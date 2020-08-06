@@ -168,54 +168,70 @@ function getColumnType(colType) {
 
 // -----------------------------------------------------------------------
 //
+// Every MS Access database has a set of tables. Each table has it's
+// data spread across many data pages. What this method does is go
+// through all the pages in the MS Access file and find out which
+// pages belong to which tables. We can tell this as there is a pointer
+// in the page to the table definition page
 //
+//
+// +--------------------------------------------------------------------------+
+// | Jet4 Data Page Definition                                                |
+// +------+---------+---------------------------------------------------------+
+// | data | length  | name       | description                                |
+// +------+---------+---------------------------------------------------------+
+// | 0x01 | 1 byte  | page_type  | 0x01 indicates a data page.                |
+// |      | 1 byte  | unknown    |                                            |
+// |      | 2 bytes | free_space | Free space in this page                    |
+// |      | 4 bytes | tdef_pg    | Page pointer to table definition           |
+// |      | 4 bytes | unknown    |                                            |
+// |      | 2 bytes | num_rows   | number of records on this page             |
+// +--------------------------------------------------------------------------+
 //
 //
 // -----------------------------------------------------------------------
 function findDataPages() {
+
     let listOfTableDefPages = {}
-    for (let currentPage = 0 ; currentPage < numPages; currentPage++){
+
+    //
+    // for every page in the MS access database file
+    //
+    for (    let currentPage = 0;    currentPage < numPages;    currentPage++    ){
+
         tempoffset = 4096 * currentPage
-        let PageSignature = getVar({
-              length: 1,
-              name: "Page Type",
-              type: "number"
-           })
-        if (PageSignature == 0x01) {
-           getVar({
-              length: 1,
-              name: "Unknown",
-              type: "number"
-           })
 
-            getVar({
-               length: 2,
-               name: "Free Space",
-               type: "number"
-           })
-           let tdef_pg = getVar({
-              length: 3,
-              name: "tdef_pg",
-              type: "number"
-           })
+        //
+        // if this page is a data page ...
+        //
+        let page_type = getVar({length: 1,name: "Page Type",type: "number"})
+        if (page_type == 0x01) {
+            getVar({length: 1,name: "Unknown"})
+            getVar({length: 2,name: "Free Space",type: "number"})
 
-           if (tdef_pg < 2) {
+            //
+            // get the page number of the table definition
+            //
+            let tdef_pg =    getVar({length: 4,name: "tdef_pg",type: "number"})
+            getVar({length: 4,name: "Unknown"})
+            let RecordCount = getVar({length: 2,name: "RecordCount",type: "number"})
 
-           } else if (tdef_pg > 10000) {
+            if (tdef_pg < 2) {
 
-           } else if (!listOfTableDefPages[tdef_pg]) {
-               listOfTableDefPages[tdef_pg] = {
-                   pages: [currentPage]
-               }
+            } else if (tdef_pg > 10000) {
 
-           } else {
-               listOfTableDefPages[tdef_pg].pages.push(currentPage)
-           }
+            } else if (!listOfTableDefPages[tdef_pg]) {
+                listOfTableDefPages[tdef_pg] = {
+                    pages: [{pagenum: currentPage, recordcount: RecordCount}]
+                }
+
+            } else {
+               listOfTableDefPages[tdef_pg].pages.push({pagenum: currentPage, recordcount: RecordCount})
+            }
         }
     }
 
     wholeDb.tableDefinition = listOfTableDefPages
-
 }
 
 
@@ -580,7 +596,7 @@ function toUTF8Array(input) {
 // -----------------------------------------------------------------------
 function populateDataForTableDefinedOnPage(pageNum) {
 
-    let tableData           = []                                   // list of rows of data
+    let tableData          = []                                    // list of rows of data
     let tableDefinition    = wholeDb.tableDefinition[pageNum]      // table definitions
 
     //
