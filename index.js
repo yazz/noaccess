@@ -166,13 +166,20 @@ function getColumnType(colType) {
 
 
 
-// -----------------------------------------------------------------------
+// ---------------------------------------------------------------------------+
 //
-// Every MS Access database has a set of tables. Each table has it's
-// data spread across many data pages. What this method does is go
+//                          +---------------+
+//                          | findDataPages |
+//                          +---------------+
+//
+//
+// Every MS Access database has a set of tables, each of which contain data.
+//
+// In an MS Access file this data is stored across many pages, in pages known
+// as data pages. What this "findDataPages" method does is to go
 // through all the pages in the MS Access file and find out which
-// pages belong to which tables. We can tell this as there is a pointer
-// in the page to the table definition page
+// pages belong to which tables. We can tell this as there is a pointer from
+// each data page to the table definition page, as shown below (****)
 //
 //
 // +--------------------------------------------------------------------------+
@@ -183,11 +190,31 @@ function getColumnType(colType) {
 // | 0x01 | 1 byte  | page_type  | 0x01 indicates a data page.                |
 // |      | 1 byte  | unknown    |                                            |
 // |      | 2 bytes | free_space | Free space in this page                    |
-// |      | 4 bytes | tdef_pg    | Page pointer to table definition           |
+// |      | 4 bytes | tdef_pg    | Page pointer to table definition (****)    |
 // |      | 4 bytes | unknown    |                                            |
 // |      | 2 bytes | num_rows   | number of records on this page             |
 // +--------------------------------------------------------------------------+
 //
+// Once we have the pages read in then we store them like so in the global
+// "wholeDb" variable:
+//
+// wholeDb
+// {
+//     tableDefinition
+//     {
+//         2
+//         {
+//            pages
+//            [
+//              {
+//                pagenum: 17,
+//                recordcount: 43
+//              },
+//              {
+//                pagenum: 122
+//                recordcount: 7
+//              }
+//            ],
 //
 // -----------------------------------------------------------------------
 function findDataPages() {
@@ -238,6 +265,11 @@ function findDataPages() {
 
 
 // -----------------------------------------------------------------------
+//
+//                       +----------------------------+
+//                       |  getTableDefinitionForPage |
+//                       +----------------------------+
+//
 //
 //
 //
