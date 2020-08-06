@@ -584,6 +584,25 @@ function toUTF8Array(input) {
 //                    |  populateDataForTableDefinedOnPage |
 //                    +------------------------------------+
 //
+//
+// +--------------------------------------------------------------------------+
+// | Jet3 Data Page Definition                                                |
+// +------+---------+---------------------------------------------------------+
+// | data | length  | name       | description                                |
+// +------+---------+---------------------------------------------------------+
+// | 0x01 | 1 byte  | page_type  | 0x01 indicates a data page.                |
+// | 0x01 | 1 byte  | unknown    |                                            |
+// |      | 2 bytes | free_space | Free space in this page                    |
+// |      | 4 bytes | tdef_pg    | Page pointer to table definition           |
+// |      | 4 bytes | unknown    |                                            |
+// |      | 2 bytes | num_rows   | number of records on this page             |
+// +--------------------------------------------------------------------------+
+// | Iterate for the number of records                                        |
+// +--------------------------------------------------------------------------+
+// |      | 2 bytes | offset_row | The record's location on this page         |
+// +--------------------------------------------------------------------------+
+//
+//
 // +--------------------------------------------------------------------------+
 // | Jet4 Row Definition                                                      |
 // +------+---------+---------------------------------------------------------+
@@ -599,52 +618,43 @@ function toUTF8Array(input) {
 // +--------------------------------------------------------------------------+
 //
 // -----------------------------------------------------------------------
-function populateDataForTableDefinedOnPage(pageNum) {
+function populateDataForTableDefinedOnPage(  pageNum  ) {
 
-    let tableData          = []                                    // list of rows of data
-    let table_pages    = wholeDb.table_pages[pageNum]              // table definitions
+    let tableData          = []                                        // list of rows of data
+    let table_pages        = wholeDb.table_pages[pageNum]              // table definitions
 
     //
     // find all the data pages for this table. stored in
     // "wholeDb.table_pages.data_pages[  pageNum  ]"
     //
-    for (let dataPageIndex = 0; dataPageIndex < table_pages.data_pages.length; dataPageIndex++ ) {
+    for (   let dataPageIndex = 0;   dataPageIndex < table_pages.data_pages.length;   dataPageIndex++   ) {
 
         let dataPageNum = table_pages.data_pages[dataPageIndex].pagenum
         tempoffset = 4096 * dataPageNum
 
-        let DataPageSignature = getVar({
-           length:   1,
-           name:    "DataPageSignature",
-           type:    "number",
-           showas:  "hex"
-       })
+        let DataPageSignature = getVar({length:   1,name:    "DataPageSignature",type:    "number"})
 
-       //
-       // for each data page first read the header of the data page
-       //
-       getVar({ length: 1, name: "Unknown", type: "number"})
-       let FreeSpace = getVar({length: 2, name: "Free Space", type: "number"})
-       let tdef_pg = getVar({length: 3,name: "tdef_pg",type: "number"})
-       let pgr = getVar({length: 1,name: "tdef_pg record",type: "number"})
-       let Owner = getVar({length: 4,name: "Unknown",type: "number"})
-       let RecordCount = getVar({length: 2,name: "RecordCount",type: "number"})
-       let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].TotalColumnCount + 7) / 8)
+        //
+        // for each data page first read the header of the data page
+        //
+        getVar({ length: 1, name: "Unknown", type: "number"})
+        let FreeSpace = getVar({length: 2, name: "Free Space", type: "number"})
+        let tdef_pg = getVar({length: 3,name: "tdef_pg",type: "number"})
+        let pgr = getVar({length: 1,name: "tdef_pg record",type: "number"})
+        getVar({length: 4,name: "Unknown",type: "number"})
+        let RecordCount = getVar({length: 2,name: "RecordCount",type: "number"})
+        let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].TotalColumnCount + 7) / 8)
 
-       //
-       // Since we are given the record count for how many records are stored
-       // on this data page in "RecordCount" we can go through and find all
-       // the record positions on this page since we are given the offsets
-       //
-       let offsetList = []
-       let lastEnd = (4096 * dataPageNum) + 4096 - 1
-       for (let recIndex = 0 ; recIndex < RecordCount; recIndex++) {
+        //
+        // Since we are given the record count for how many records are stored
+        // on this data page in "RecordCount" we can go through and find all
+        // the record positions on this page since we are given the offsets
+        //
+        let offsetList = []
+        let lastEnd = (4096 * dataPageNum) + 4096 - 1
+        for (let recIndex = 0 ; recIndex < RecordCount; recIndex++) {
 
-           let RawRecordOffset = getVar({
-               length: 2,
-               name: "RecordOffset",
-               type: "number"
-            })
+            let RawRecordOffset = getVar({length: 2,name: "RecordOffset",type: "number"})
             let newRecordMetaData = {
                 RawRecordOffset:    RawRecordOffset
                 ,
