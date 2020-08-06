@@ -512,9 +512,10 @@ function getTableDefinitionForPage(pageNum) {
         //console.log("colname: " + colname)
         //console.log("columns[" + x + "]: " + columns[x])
 
-        columns[x].name =  tttt
-        columnNames[tttt] = x
-        wholeDb.table_pages[pageNum].col_defns[x] = columns[x]
+        let colNum = x
+        columns[ colNum ].name =  tttt
+        columnNames[tttt] = colNum
+        wholeDb.table_pages[pageNum].col_defns[ colNum ] = columns[ colNum ]
     }
     wholeDb.table_pages[pageNum].columnNames = columnNames
     wholeDb.table_pages[pageNum].fixedColsList = fixedColsList
@@ -579,8 +580,23 @@ function toUTF8Array(input) {
 
 // -----------------------------------------------------------------------
 //
+//                    +------------------------------------+
+//                    |  populateDataForTableDefinedOnPage |
+//                    +------------------------------------+
 //
-//
+// +--------------------------------------------------------------------------+
+// | Jet4 Row Definition                                                      |
+// +------+---------+---------------------------------------------------------+
+// | data | length  | name       | description                                |
+// +------+---------+---------------------------------------------------------+
+// |      | 2 bytes | num_cols   | Number of columns stored on this row.      |
+// |      | n bytes | fixed_cols | Fixed length columns                       |
+// |      | n bytes | var_cols   | Variable length columns                    |
+// |      | 2 bytes | eod        | length of data from begining of record     |
+// |      | n bytes | var_table[]| offset from start of row for each var_col  |
+// |      | 2 bytes | var_len    | number of variable length columns          |
+// |      | n bytes | null_mask  | Null indicator.  See notes.                |
+// +--------------------------------------------------------------------------+
 //
 // -----------------------------------------------------------------------
 function populateDataForTableDefinedOnPage(pageNum) {
