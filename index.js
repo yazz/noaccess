@@ -450,7 +450,6 @@ function getTableDefinitionForPage(pageNum) {
         newColumn.colTypeText = getColumnType(colType)
         //console.log("Col type: " + getColumnType(colType))
 
-        columns[x] = newColumn
         getVar({useJetVersion: 4,length: 4,name: "Unknown"})
         let ColID = getVar({length: 2,name: "Col ID",type: "number"})
         let VariableColumnNumber = getVar({length: 2,name: "Variable Column Number",type: "number"})
@@ -485,6 +484,9 @@ function getTableDefinitionForPage(pageNum) {
         newColumn.canBeNull = canBeNull
         newColumn.autonumber = autonumber
         newColumn.ColFlags = "0x" + ColFlags[1].toString(16) + ":0x" + ColFlags[0].toString(16)
+
+        columns[x] = newColumn
+
     }
     console.log(" ")
     console.log(" ")
@@ -493,18 +495,9 @@ function getTableDefinitionForPage(pageNum) {
     wholeDb.table_pages[pageNum].col_defns = {}
     for (var x=0; x< colCount; x++) {
 
-        let colLen = getVar({
-            length: 2,
-            name: "col length",
-            type: "number"
-            ,
-            show: false
-        })
+        let colLen = getVar({length: 2,name: "col length",type: "number"})
 
-        let colname = getVar({
-            length: colLen,
-            name: "col name"
-        })
+        let colname = getVar({length: colLen,name: "col name"})
 
         let tttt=toUTF8Array(colname)
 
