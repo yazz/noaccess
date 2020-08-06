@@ -287,6 +287,58 @@ function findDataPages() {
 // +------+---------+-------------+------------------------------------------+
 //
 //
+// +-------------------------------------------------------------------------+
+// | Jet4 Table Definition Block (55 bytes)                                  |
+// +------+---------+-------------+------------------------------------------+
+// | data | length  | name        | description                              |
+// +------+---------+-------------+------------------------------------------+
+// |      | 4 bytes | tdef_len    | Length of the data for this page         |
+// |      | 4 bytes | unknown     | unknown                                  |
+// |      | 4 bytes | num_rows    | Number of records in this table          |
+// | 0x00 | 4 bytes | autonumber  | value for the next value of the          |
+// |      |         |             | autonumber column, if any. 0 otherwise   |
+// | 0x01 | 1 byte  | autonum_flag| 0x01 makes autonumbers work in access    |
+// |      | 3 bytes | unknown     | unknown                                  |
+// | 0x00 | 4 bytes | ct_autonum  | autonumber value for complex type column(s) |
+// |      |         |             | (shared across all columns in the table) |
+// |      | 8 bytes | unknown     | unknown                                  |
+// | 0x4e | 1 byte  | table_type  | 0x4e: user table, 0x53: system table     |
+// |      | 2 bytes | max_cols    | Max columns a row will have (deletions)  |
+// |      | 2 bytes | num_var_cols| Number of variable columns in table      |
+// |      | 2 bytes | num_cols    | Number of columns in table (repeat)      |
+// |      | 4 bytes | num_idx     | Number of logical indexes in table       |
+// |      | 4 bytes | num_real_idx| Number of index entries                  |
+// |      | 4 bytes | used_pages  | Points to a record containing the        |
+// |      |         |             | usage bitmask for this table.            |
+// |      | 4 bytes | free_pages  | Points to a similar record as above,     |
+// |      |         |             | listing pages which contain free space.  |
+// +-------------------------------------------------------------------------+
+// | Iterate for the number of num_real_idx (12 bytes per idxs)              |
+// +-------------------------------------------------------------------------+
+// | ...
+// +-------------------------------------------------------------------------+
+// | Iterate for the number of num_cols (25 bytes per column)                |
+// +-------------------------------------------------------------------------+
+// |      | 1 byte  | col_type    | Column Type (see table below)            |
+// |      | 4 bytes | unknown     | matches first unknown definition block   |
+// |      | 2 bytes | col_num     | Column Number (includes deleted columns) |
+// |      | 2 bytes | offset_V    | Offset for variable length columns       |
+// |      | 2 bytes | col_num     | Column Number                            |
+// |      | 2 bytes | misc        | prec/scale (1 byte each), or sort order  |
+// |      |         |             | for textual columns(0x409=General)       |
+// |      |         |             | or "complexid" for complex columns (4bytes)|
+// |      | 2 bytes | misc_ext    | text sort order version num is 2nd byte  |
+// |      | 1 byte  | bitmask     | See column flags below                   |
+// |      | 1 byte  | misc_flags  | 0x01 for compressed unicode              |
+// | 0000 | 4 bytes | ???         |                                          |
+// |      | 2 bytes | offset_F    | Offset for fixed length columns          |
+// |      | 2 bytes | col_len     | Length of the column (0 if memo/ole)     |
+// +-------------------------------------------------------------------------+
+// | Iterate for the number of num_cols (n*2 bytes per column)               |
+// +-------------------------------------------------------------------------+
+// |      | 2 bytes | col_name_len| len of the name of the column            |
+// |      | n bytes | col_name    | Name of the column (UCS-2 format)        |
+// +-------------------------------------------------------------------------+
 //
 // -----------------------------------------------------------------------
 function getTableDefinitionForPage(pageNum) {
@@ -297,17 +349,21 @@ function getTableDefinitionForPage(pageNum) {
     tempoffset = 4096 * pageNum
 
 
+    //
+    // get the table header
+    //
     let PageSignature = find(tempoffset, 1, "number")  // 0x02 means table deinition page
     wholeDb.tableDefinition[pageNum].PageSignature = PageSignature
     VC = find(tempoffset + 2, 2, "number")
     wholeDb.tableDefinition[pageNum].freeSpaceInThisPageMinus8 = VC
     NextPage = find(tempoffset + 4, 4, "number")
     wholeDb.tableDefinition[pageNum].NextPage = NextPage
-
-
     tempoffset = tempoffset + 8
 
 
+    //
+    // get the table definition
+    //
     let TableDefinitionLength = find(tempoffset, 4, "number")
     wholeDb.tableDefinition[pageNum].TableDefinitionLength = TableDefinitionLength
 
