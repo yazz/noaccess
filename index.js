@@ -382,120 +382,49 @@ function getTableDefinitionForPage(pageNum) {
     let Autonumber = find(tempoffset, 4, "number")
     wholeDb.table_pages[pageNum].definition.Autonumber = Autonumber
 
-
-
     tempoffset = tempoffset + 4
 
-    let AutonumberIncrement = getVar({
-        useJetVersion: 4,
-        length: 4,
-        name: "Autonumber Increment",
-        type: "number"
-    })
+    let AutonumberIncrement = getVar({useJetVersion: 4,length: 4,name: "Autonumber Increment",type: "number"})
     wholeDb.table_pages[pageNum].definition.Autonumber = Autonumber
 
+    getVar({useJetVersion: 4,length: 4,name: "Complex Autonumber",showas: "number"})
+    getVar({useJetVersion: 4,length: 4,name: "Unknown"})
+    getVar({useJetVersion: 4,length: 4,name: "Unknown"})
 
-    getVar({
-        useJetVersion: 4,
-        length: 4,
-        name: "Complex Autonumber",
-        showas: "number"
-    })
-
-    getVar({
-        useJetVersion: 4,
-        length: 4,
-        name: "Unknown"
-    })
-
-    getVar({
-        useJetVersion: 4,
-        length: 4,
-        name: "Unknown"
-    })
-
-    let Flags = getVar({
-        length: 1,
-        name: "Table Type / Flags?",
-        type: "number",
-        showas: "hex"
-    })
+    let Flags = getVar({length: 1,name: "Table Type / Flags?",type: "number",showas: "hex"})
     wholeDb.table_pages[pageNum].definition.Flags = Flags
 
-
-    let NextColumnId = getVar({
-        length: 2,
-        name: "Next Column Id",
-        type: "number"
-    })
+    let NextColumnId = getVar({length: 2,name: "Next Column Id",type: "number"})
     wholeDb.table_pages[pageNum].definition.NextColumnId = NextColumnId
 
-
-    let VariableColumns = getVar({
-        length: 2,
-        name: "Variable columns",
-        type: "number"
-    })
+    let VariableColumns = getVar({length: 2,name: "Variable columns",type: "number"})
     wholeDb.table_pages[pageNum].definition.VariableColumnsCount = VariableColumns
 
-
-    let colCount = getVar({
-        length: 2,
-        name: "Column Count",
-        type: "number",
-        show: true
-    })
+    let colCount = getVar({length: 2,name: "Column Count",type: "number"})
     wholeDb.table_pages[pageNum].definition.TotalColumnCount = colCount
 
-
-    let indexCount = getVar({
-        length: 4,
-        name: "Index Count",
-        type: "number"
-    })
+    let indexCount = getVar({length: 4,name: "Index Count",type: "number"})
     wholeDb.table_pages[pageNum].definition.indexCount = indexCount
 
-    let RealIndexCount = getVar({
-        length: 4,
-        name: "Real Index Count",
-        type: "number"
-    })
+    let RealIndexCount = getVar({length: 4,name: "Real Index Count",type: "number"})
     wholeDb.table_pages[pageNum].definition.RealIndexCount = RealIndexCount
 
-    let RowPageMapRecord = getVar({
-        length: 1,
-        name: "Row Page Map record",
-        type: "number",
-        show: true
-    })
+    let RowPageMapRecord = getVar({length: 1,name: "Row Page Map record",type: "number"  })
     wholeDb.table_pages[pageNum].definition.RowPageMapRecord = RowPageMapRecord
 
-    var RowPageMapPage = getVar({
-        length: 3,
-        name: "Row Page Map Page",
-        type: "number",
-        show: true
-    })
+    var RowPageMapPage = getVar({length: 3,name: "Row Page Map Page",type: "number"})
     wholeDb.table_pages[pageNum].definition.RowPageMapPage = RowPageMapPage
 
-    let FreeSpacePageMapRecord = getVar({
-        length: 1,
-        name: "Free Space Page Map Record",
-        type: "number",
-        show: true
-    })
+    let FreeSpacePageMapRecord = getVar({length: 1,name: "Free Space Page Map Record",type: "number" })
     wholeDb.table_pages[pageNum].definition.FreeSpacePageMapRecord = FreeSpacePageMapRecord
 
-    let FreeSpacePageMapPage = getVar({
-        length: 3,
-        name: "Free Space Page Map Page",
-        type: "number",
-        show: true
-    })
+    let FreeSpacePageMapPage = getVar({length: 3,name: "Free Space Page Map Page",type: "number"})
     wholeDb.table_pages[pageNum].definition.FreeSpacePageMapPage = FreeSpacePageMapPage
+
 
     //
     // skip indexes
+    //
     // for every real index :
     //
     // Unknown A1	4 bytes	???
@@ -505,19 +434,20 @@ function getTableDefinitionForPage(pageNum) {
     tempoffset = tempoffset + (12 * RealIndexCount)
 
 
-
+    //
+    // get the definition of all the cols
+    //
     let columns = {}
     let columnNames = {}
     let fixedColsList = []
 
     for (var x=0; x< colCount; x++) {
+
         let newColumn = new Object()
-        let colType = getVar({
-            length: 1,
-            name: "col Type",
-            type: "number"
-        })
-        newColumn.colType = getColumnType(colType)
+
+        let colType = getVar({length: 1,name: "col Type",type: "number"})
+        newColumn.colType = colType
+        newColumn.colTypeText = getColumnType(colType)
         //console.log("Col type: " + getColumnType(colType))
 
         columns[x] = newColumn
