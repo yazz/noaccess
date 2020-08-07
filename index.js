@@ -708,6 +708,10 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     let coIn = (numFixed - 1) - yy
                     let fixedColRealIndex = wholeDb.table_pages[pageNum].fixedColsList[coIn]
                     let fixedColDefn = wholeDb.table_pages[pageNum].col_defns[fixedColRealIndex]
+
+                    tempoffset = recordPosOffsetFromStartOfPage[record_index].start + fixedColDefn.FixedOffset + 2
+
+
                     let colVal = getVar({
                        length: fixedColDefn.length,
                        name: fixedColDefn.name,
@@ -715,13 +719,13 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     })
 
                     tableRecord.data[fixedColDefn.name] = colVal
-
+//zzz
 
                 }
 
                 let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
-                tempoffset = recordPosOffsetFromStartOfPage[record_index].end - NullFieldBitmapLength 
+                tempoffset = recordPosOffsetFromStartOfPage[record_index].end - NullFieldBitmapLength
 
                 let FieldMask = getVar({
                    length: NullFieldBitmapLength,
