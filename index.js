@@ -644,10 +644,10 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
         // on this data page in "RecordCount" we can go through and find all
         // the record positions on this page since we are given the offsets
         //
-        let offsetList = []
+        let recordPosOffsetFromStartOfPage = []
         let lastEnd = (4096 * dataPageNum) + 4096 - 1
-        for (let recIndex = 0 ; recIndex < RecordCount; recIndex++) {
-
+        for (let recIndex = 0 ; recIndex < RecordCount; recIndex++)
+        {
             let RawRecordOffset = getVar({length: 2,name: "RecordOffset",type: "number"})
             let newRecordMetaData = {
                 RawRecordOffset:    RawRecordOffset
@@ -675,18 +675,16 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
             newRecordMetaData.length = (newRecordMetaData.end - newRecordMetaData.start) + 1
             lastEnd = newRecordMetaData.start - 1
 
-            offsetList.push( newRecordMetaData )
+            recordPosOffsetFromStartOfPage.push( newRecordMetaData )
         }
 
         //
         // Now that we have all the positions of the records within this data page
-        // stored in "offsetList" we can go through all the records
+        // stored in "recordPosOffsetFromStartOfPage" we can go through all the records
         //
         let NumCols     = Object.keys(wholeDb.table_pages[pageNum].col_defns).length
         let numFixed    = wholeDb.table_pages[pageNum].definition.TotalColumnCount -
                             wholeDb.table_pages[pageNum].definition.VariableColumnsCount
-        let fixedCount  = 0
-
 
         //
         // for every record on this data page
@@ -695,22 +693,25 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
             tableRecord = {}
             tableData.push(tableRecord)
 
-            if (offsetList[record_index].valid) {
-                tempoffset = offsetList[record_index].start
-                let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
+            if (recordPosOffsetFromStartOfPage[record_index].valid) {
+                tempoffset = recordPosOffsetFromStartOfPage[record_index].start
                 for (let yy=0;yy < wholeDb.table_pages[pageNum].definition.TotalColumnCount; yy++){
                     if (wholeDb.table_pages[pageNum].col_defns[yy].fixedLength) {
+                        let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
                         let colVal = getVar({
                            length: wholeDb.table_pages[pageNum].col_defns[yy].length,
                            name: wholeDb.table_pages[pageNum].col_defns[yy].name,
                            type: "number"
                         })
+
+                       tableRecord[wholeDb.table_pages[pageNum].col_defns[yy].name] = colVal
+
                     }
                 }
 
                 let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
-                tempoffset = offsetList[record_index].end - NullFieldBitmapLength - 2
+                tempoffset = recordPosOffsetFromStartOfPage[record_index].end - NullFieldBitmapLength - 2
 
                 let FieldMask = getVar({
                    length: NullFieldBitmapLength,
@@ -731,34 +732,14 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         maskedFields[getColName(pageNum,recIndex)] = ""
                     }
                 }
-                tableRecord._mask = maskedFields
-
-
-                //
-                // Show the fixed columns first
-                //
-                tempoffset = offsetList[record_index].start
-                for (   let recIndex = 0;
-                        recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount;
-                        recIndex ++   )
-                {
-                     //zzz
-
-                     for (   let fixedColIndex = 0;
-                             fixedColIndex <  wholeDb.table_pages[pageNum].fixedColsList.length;
-                             fixedColIndex ++   )
-                     {
-                         let fixedColRealIndex = wholeDb.table_pages[pageNum].fixedColsList[fixedColIndex]
-                         let fixedColDefn = wholeDb.table_pages[pageNum].col_defns[fixedColRealIndex]
-                         let fixedColVal
-                         fixedColVal = getVar({length: fixedColDefn.length,name: "colValue",type: "number"})
-                         tableRecord[fixedColDefn.name] = fixedColVal
-                     }
-                }
+                //tableRecord._mask = maskedFields
 
 
 
-                tempoffset = offsetList[record_index].end - NullFieldBitmapLength - 1
+
+
+
+                tempoffset = recordPosOffsetFromStartOfPage[record_index].end - NullFieldBitmapLength - 1
                 let lastOffset = tempoffset
                 let VariableLengthFieldCount = getVar({length: 2,name: "VariableLengthFieldCount",type: "number"})
 
@@ -773,7 +754,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     let VariableLengthFieldOffset = getVar({length: 2,name: "VariableLengthFieldOffset",type: "number"})
                     listOfOffsetsRaw.push(VariableLengthFieldOffset)
                     if ((varIndex == 0 ) || (listOfOffsetsRaw[varIndex] != listOfOffsetsRaw[varIndex - 1])) {
-                        listOfOffsets.push({relative_offset: VariableLengthFieldOffset,start: offsetList[record_index].start + VariableLengthFieldOffset})
+                        listOfOffsets.push({relative_offset: VariableLengthFieldOffset,start: recordPosOffsetFromStartOfPage[record_index].start + VariableLengthFieldOffset})
                     }
                 }
 
