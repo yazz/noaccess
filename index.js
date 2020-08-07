@@ -701,11 +701,12 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
             if (recordPosOffsetFromStartOfPage[record_index].valid) {
                 tempoffset = recordPosOffsetFromStartOfPage[record_index].start
-                for (let yy=0;yy < numFixed; yy++)
+                let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
+                for (let yy=0 ;yy < numFixed ; yy++)
                 {
-                    let fixedColRealIndex = wholeDb.table_pages[pageNum].fixedColsList[yy]
+                    let coIn = (numFixed - 1) - yy
+                    let fixedColRealIndex = wholeDb.table_pages[pageNum].fixedColsList[coIn]
                     let fixedColDefn = wholeDb.table_pages[pageNum].col_defns[fixedColRealIndex]
-                    let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
                     let colVal = getVar({
                        length: fixedColDefn.length,
                        name: fixedColDefn.name,
