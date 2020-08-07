@@ -530,7 +530,7 @@ function getTableDefinitionForPage(pageNum) {
 //
 // -----------------------------------------------------------------------
 function getFixedColName(pageNum, varIndex) {
-    //zzz
+
     return    "FIXED_" + wholeDb.table_pages[pageNum].col_defns[
         wholeDb.table_pages[pageNum].fixedColsList[varIndex]
     ].name
@@ -544,7 +544,7 @@ function getFixedColName(pageNum, varIndex) {
 //
 // -----------------------------------------------------------------------
 function getColName(pageNum, varIndex) {
-    //zzz
+
     return    ((wholeDb.table_pages[pageNum].col_defns[varIndex].fixedLength?"FIXED_":"VAR_") + (wholeDb.table_pages[pageNum].col_defns[varIndex].name)).padEnd(25, ' ')
     //return varIndex
 }
@@ -720,8 +720,10 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                 let maskedFields = {}
 
-                for (   let recIndex = 0;   recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount;   recIndex ++   ) {
-
+                for (   let recIndex = 0;
+                        recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount;
+                        recIndex ++   )
+                {
                     let maskBit = Math.pow(2, recIndex)
                     if (FieldMask & maskBit) {
                         maskedFields[getColName(pageNum,recIndex)] = "***********"
@@ -730,6 +732,31 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     }
                 }
                 tableRecord._mask = maskedFields
+
+
+                //
+                // Show the fixed columns first
+                //
+                tempoffset = offsetList[record_index].start
+                for (   let recIndex = 0;
+                        recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount;
+                        recIndex ++   )
+                {
+                     //zzz
+
+                     for (   let fixedColIndex = 0;
+                             fixedColIndex <  wholeDb.table_pages[pageNum].fixedColsList.length;
+                             fixedColIndex ++   )
+                     {
+                         let fixedColRealIndex = wholeDb.table_pages[pageNum].fixedColsList[fixedColIndex]
+                         let fixedColDefn = wholeDb.table_pages[pageNum].col_defns[fixedColRealIndex]
+                         let fixedColVal
+                         fixedColVal = getVar({length: fixedColDefn.length,name: "colValue",type: "number"})
+                         tableRecord[fixedColDefn.name] = fixedColVal
+                     }
+                }
+
+
 
                 tempoffset = offsetList[record_index].end - NullFieldBitmapLength - 1
                 let lastOffset = tempoffset
