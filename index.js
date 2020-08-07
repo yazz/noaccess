@@ -687,6 +687,10 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                             wholeDb.table_pages[pageNum].definition.VariableColumnsCount
         let fixedCount  = 0
 
+
+        //
+        // for every record on this data page
+        //
         for (let rc = 0;rc < RecordCount; rc ++) {
             tableRecord = {}
             tableData.push(tableRecord)
@@ -706,16 +710,18 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                 let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
-                tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
+                tempoffset = offsetList[rc].end - NullFieldBitmapLength - 2
 
                 let FieldMask = getVar({
                    length: NullFieldBitmapLength,
                    name: "FieldMask",
-                   type: "number"
+                   type: "littleendian"
                 })
 
                 let maskedFields = {}
-                for (let recIndex = 0 ; recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount; recIndex++) {
+
+                for (   let recIndex = 0;   recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount;   recIndex ++   ) {
+
                     let maskBit = Math.pow(2, recIndex)
                     if (FieldMask & maskBit) {
                         maskedFields[getColName(pageNum,recIndex)] = "***********"
@@ -770,11 +776,11 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     tempoffset = listOfOffsets[varIndex].start
                     if (listOfOffsets[varIndex].length  == 2) {
                         let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,name: "VariableLengthFieldOffset",type:"number"})
-                        tableRecord[getFixedColName(pageNum, varIndex)] = VariableLengthFieldOffset
+                        tableRecord[getColName(pageNum, varIndex)] = VariableLengthFieldOffset
 
                     } else {
                         let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,name: "VariableLengthFieldOffset"})
-                        tableRecord[getFixedColName(pageNum, varIndex)] = toUTF8Array(VariableLengthFieldOffset)
+                        tableRecord[getColName(pageNum, varIndex)] = toUTF8Array(VariableLengthFieldOffset)
                     }
                 }
             }
