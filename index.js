@@ -691,12 +691,12 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
         //
         // for every record on this data page
         //
-        for (let rc = 0;rc < RecordCount; rc ++) {
+        for (let record_index = 0;record_index < RecordCount; record_index ++) {
             tableRecord = {}
             tableData.push(tableRecord)
 
-            if (offsetList[rc].valid) {
-                tempoffset = offsetList[rc].start
+            if (offsetList[record_index].valid) {
+                tempoffset = offsetList[record_index].start
                 let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
                 for (let yy=0;yy < wholeDb.table_pages[pageNum].definition.TotalColumnCount; yy++){
                     if (wholeDb.table_pages[pageNum].col_defns[yy].fixedLength) {
@@ -710,7 +710,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                 let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
-                tempoffset = offsetList[rc].end - NullFieldBitmapLength - 2
+                tempoffset = offsetList[record_index].end - NullFieldBitmapLength - 2
 
                 let FieldMask = getVar({
                    length: NullFieldBitmapLength,
@@ -731,7 +731,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                 }
                 tableRecord._mask = maskedFields
 
-                tempoffset = offsetList[rc].end - NullFieldBitmapLength - 1
+                tempoffset = offsetList[record_index].end - NullFieldBitmapLength - 1
                 let lastOffset = tempoffset
                 let VariableLengthFieldCount = getVar({length: 2,name: "VariableLengthFieldCount",type: "number"})
 
@@ -746,7 +746,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     let VariableLengthFieldOffset = getVar({length: 2,name: "VariableLengthFieldOffset",type: "number"})
                     listOfOffsetsRaw.push(VariableLengthFieldOffset)
                     if ((varIndex == 0 ) || (listOfOffsetsRaw[varIndex] != listOfOffsetsRaw[varIndex - 1])) {
-                        listOfOffsets.push({relative_offset: VariableLengthFieldOffset,start: offsetList[rc].start + VariableLengthFieldOffset})
+                        listOfOffsets.push({relative_offset: VariableLengthFieldOffset,start: offsetList[record_index].start + VariableLengthFieldOffset})
                     }
                 }
 
