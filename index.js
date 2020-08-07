@@ -702,6 +702,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
             if (recordPosOffsetFromStartOfPage[record_index].valid) {
                 tempoffset = recordPosOffsetFromStartOfPage[record_index].start
                 let NumCols = getVar({ length: 2, name: "NumCols", type: "number" })
+                tableRecord.meta.NumCols = NumCols
                 for (let yy=0 ;yy < numFixed ; yy++)
                 {
                     let coIn = (numFixed - 1) - yy
