@@ -690,7 +690,13 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
         // for every record on this data page
         //
         for (let record_index = 0;record_index < RecordCount; record_index ++) {
-            tableRecord = {}
+            tableRecord = {
+                meta: {
+                }
+                ,
+                data: {
+                }
+            }
             tableData.push(tableRecord)
 
             if (recordPosOffsetFromStartOfPage[record_index].valid) {
@@ -706,7 +712,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                        type: "number"
                     })
 
-                    tableRecord[fixedColDefn.name] = colVal
+                    tableRecord.data[fixedColDefn.name] = colVal
 
 
                 }
@@ -734,7 +740,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         maskedFields[getColName(pageNum,recIndex)] = ""
                     }
                 }
-                //tableRecord._mask = maskedFields
+                //tableRecord.meta._mask = maskedFields
 
 
 
@@ -786,11 +792,11 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     tempoffset = listOfOffsets[varIndex].start
                     if (listOfOffsets[varIndex].length  == 2) {
                         let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,name: "VariableLengthFieldOffset",type:"number"})
-                        tableRecord[getColName(pageNum, varIndex)] = VariableLengthFieldOffset
+                        tableRecord.data[getColName(pageNum, varIndex)] = VariableLengthFieldOffset
 
                     } else {
                         let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,name: "VariableLengthFieldOffset"})
-                        tableRecord[getColName(pageNum, varIndex)] = toUTF8Array(VariableLengthFieldOffset)
+                        tableRecord.data[getColName(pageNum, varIndex)] = toUTF8Array(VariableLengthFieldOffset)
                     }
                 }
             }
