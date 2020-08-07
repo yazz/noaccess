@@ -485,7 +485,8 @@ function getTableDefinitionForPage(pageNum) {
         newColumn.autonumber = autonumber
         newColumn.ColFlags = "0x" + ColFlags[1].toString(16) + ":0x" + ColFlags[0].toString(16)
 
-        columns[ColID] = newColumn
+        //columns[ColID] = newColumn
+        columns[x] = newColumn
 
     }
     console.log(" ")
@@ -579,12 +580,12 @@ function toUTF8Array(input) {
 //
 //
 // +--------------------------------------------------------------------------+
-// | Jet3 Data Page Definition                                                |
+// | Jet4 Data Page Definition                                                |
 // +------+---------+---------------------------------------------------------+
 // | data | length  | name       | description                                |
 // +------+---------+---------------------------------------------------------+
 // | 0x01 | 1 byte  | page_type  | 0x01 indicates a data page.                |
-// | 0x01 | 1 byte  | unknown    |                                            |
+// |      | 1 byte  | unknown    |                                            |
 // |      | 2 bytes | free_space | Free space in this page                    |
 // |      | 4 bytes | tdef_pg    | Page pointer to table definition           |
 // |      | 4 bytes | unknown    |                                            |
@@ -705,7 +706,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                 let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
-                tempoffset = offsetList[rc].end - NullFieldBitmapLength
+                tempoffset = offsetList[rc].end - NullFieldBitmapLength + 1
 
                 let FieldMask = getVar({
                    length: NullFieldBitmapLength,
