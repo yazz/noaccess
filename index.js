@@ -440,6 +440,7 @@ function getTableDefinitionForPage(pageNum) {
     let columns = {}
     let columnNames = {}
     let fixedColsList = []
+    let colIdList = {}
 
     for (var x=0; x< colCount; x++) {
 
@@ -461,6 +462,7 @@ function getTableDefinitionForPage(pageNum) {
             fixedLength = true
             fixedColsList.push(x)
         }
+        colIdList[ColID] = x
 
         let canBeNull = false
         if (ColFlags[0] & 0x02) {
@@ -513,6 +515,7 @@ function getTableDefinitionForPage(pageNum) {
     }
     wholeDb.table_pages[pageNum].columnNames = columnNames
     wholeDb.table_pages[pageNum].fixedColsList = fixedColsList
+    wholeDb.table_pages[pageNum].colIdList = colIdList
 
 
 
