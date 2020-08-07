@@ -726,6 +726,13 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                 let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
                 tempoffset = (recordPosOffsetFromStartOfPage[record_index].end - NullFieldBitmapLength) + 1
+                tempoffset = tempoffset - 2
+
+                let VarLenCount = getVar({
+                   length: 2,
+                   name: "VarLenCount",
+                   type: "number"
+                })
 
                 let FieldMask = getVar({
                    length: NullFieldBitmapLength,
@@ -746,6 +753,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         maskedFields[getColName(pageNum,recIndex)] = "null"
                     }
                 }
+                tableRecord.meta.__var_count = VarLenCount
                 tableRecord.meta._mask = maskedFields
 
 
