@@ -725,12 +725,12 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                 let NullFieldBitmapLength = Math.floor((wholeDb.table_pages[pageNum].definition.TotalColumnCount + 7) / 8)
 
-                tempoffset = recordPosOffsetFromStartOfPage[record_index].end - NullFieldBitmapLength
+                tempoffset = (recordPosOffsetFromStartOfPage[record_index].end - NullFieldBitmapLength) + 1
 
                 let FieldMask = getVar({
                    length: NullFieldBitmapLength,
                    name: "FieldMask",
-                   type: "littleendian"
+                   type: "number"
                 })
 
                 let maskedFields = {}
