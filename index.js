@@ -749,11 +749,13 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount;
                         recIndex ++   )
                 {
+                   let realColId = wholeDb.table_pages[pageNum].colIdList["" + recIndex]
+                    //let realColId = recIndex
                     let maskBit = Math.pow(2, recIndex)
                     if (FieldMask & maskBit) {
-                        maskedFields[getColName(pageNum,recIndex)] = ""
+                        maskedFields[getColName(pageNum,realColId)] = ""
                     } else {
-                        maskedFields[getColName(pageNum,recIndex)] = "null"
+                        maskedFields[getColName(pageNum,realColId)] = "null"
                     }
                 }
                 tableRecord.meta.__var_count = VarLenCount
