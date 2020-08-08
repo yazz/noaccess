@@ -3,7 +3,7 @@ exports.load = function(fileName) {
 console.log("Load Access file: " + fileName);
 
 //2,4, 5, 18, 42
-let defnPage            = 2//42//2//75//81
+let defnPage            = 42//2//75//81
 let headerJetVersion    = 4
 var fs                  = require("fs");
 let showDebug           = false
@@ -748,11 +748,15 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                         }
                     } else {
-                        maskedFields[getColName(pageNum,realColId)] = "null"
+                        //maskedFields[getColName(pageNum,realColId)] = "null"
+                        let notNullVarName
+                        notNullVarName = wholeDb.table_pages[pageNum].col_defns[realColId].name
+                        notNullVarList.push(notNullVarName)
+                        tableRecord.data[notNullVarName.padEnd(25, ' ')] = null
                     }
                 }
                 tableRecord.meta.__var_count = VarLenCount
-                tableRecord.meta._mask = maskedFields
+                //tableRecord.meta._mask = maskedFields
 
 
 
