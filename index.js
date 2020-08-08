@@ -3,7 +3,7 @@ exports.load = function(fileName) {
 console.log("Load Access file: " + fileName);
 
 //2,4, 5, 18, 42
-let defnPage            = 42//2//75//81
+let defnPage            = 2//2//75//81
 let headerJetVersion    = 4
 var fs                  = require("fs");
 let showDebug           = false
@@ -452,9 +452,9 @@ function getTableDefinitionForPage(pageNum) {
         //console.log("Col type: " + getColumnType(colType))
 
         getVar({useJetVersion: 4,length: 4,name: "Unknown"})
-        let ColIDIncludingDeleteCols = getVar({length: 2,name: "ColIDIncludingDeleteCols",type: "number"})
+        let ColID = getVar({length: 2,name: "Col ID",type: "number"})
         let VariableColumnNumber = getVar({length: 2,name: "Variable Column Number",type: "number"})
-        let ColID = getVar({length: 2,name: "ColID",type: "number"})
+        let ColumnIndex = getVar({length: 2,name: "Column Index",type: "number"})
         getVar({useJetVersion: 4,length: 4,name: "Various" })
         let ColFlags = getVar({useJetVersion: 4,length: 2,name: "Col Flags"})
         let fixedLength = false
@@ -478,9 +478,9 @@ function getTableDefinitionForPage(pageNum) {
         let FixedOffset = getVar({length: 2,name: "Fixed offset",type: "number"})
         let colDataLen = getVar({length: 2,name: "Length",type: "number"})
         newColumn.ColID = ColID
-        newColumn.ColIDIncludingDeleteCols = ColIDIncludingDeleteCols
         newColumn.length = colDataLen
         newColumn.FixedOffset = FixedOffset
+        newColumn.ColumnIndex = ColumnIndex
         newColumn.VariableColumnNumber = VariableColumnNumber
         newColumn.fixedLength = fixedLength
         newColumn.canBeNull = canBeNull
@@ -822,7 +822,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,
                             name: "VariableLengthFieldOffset"})
 //
-                        tableRecord.data[varName] = (VariableLengthFieldOffset) + "  :  " + listOfOffsets[varIndex].length
+                        tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
                     }
                 }
                 tableRecord.meta = null
