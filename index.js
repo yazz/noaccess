@@ -3,7 +3,7 @@ exports.load = function(fileName) {
 console.log("Load Access file: " + fileName);
 
 //2,4, 5, 18, 42
-let defnPage            = 2//2//75//81
+let defnPage            = 42//2//75//81
 let headerJetVersion    = 4
 var fs                  = require("fs");
 let showDebug           = false
@@ -487,7 +487,7 @@ function getTableDefinitionForPage(pageNum) {
         newColumn.canBeNull = canBeNull
         newColumn.autonumber = autonumber
         newColumn.ColFlags = "0x" + ":0x" + ColFlags[0].toString(16)
-        newColumn.UnicodeFlag = "0x" + ":0x" + UnicodeFlag[0].toString(16)
+        newColumn.UnicodeFlag = "" + UnicodeFlag[0]
 
         //columns[ColID] = newColumn
         columns[x] = newColumn
@@ -829,8 +829,8 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         let fieldDefnIndex = notNullVarListFieldOffset[varIndex]
                         let fieldDefn = wholeDb.table_pages[pageNum].col_defns[fieldDefnIndex]
                         //if wholeDb.table_pages[pageNum].col_defns[varIndex].UnicodeFlag
-                        if (fieldDefn.UnicodeFlag == 0x01) {
-                            tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
+                        if (fieldDefn.UnicodeFlag == "1") {
+                            tableRecord.data[varName] = "" + VariableLengthFieldOffset
                         } else {
                             tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
                         }
