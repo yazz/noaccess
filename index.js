@@ -3,7 +3,7 @@ exports.load = function(fileName) {
 console.log("Load Access file: " + fileName);
 
 //2,4, 5, 18, 42
-let defnPage            = 81
+let defnPage            = 2//75//81
 let headerJetVersion    = 4
 var fs                  = require("fs");
 let showDebug           = false
@@ -524,22 +524,6 @@ function getTableDefinitionForPage(pageNum) {
 
 
 
-
-
-// -----------------------------------------------------------------------
-//
-//
-//
-//
-// -----------------------------------------------------------------------
-function getFixedColName(pageNum, varIndex) {
-
-    return    "FIXED_" + wholeDb.table_pages[pageNum].col_defns[
-        wholeDb.table_pages[pageNum].fixedColsList[varIndex]
-    ].name
-}
-
-
 // -----------------------------------------------------------------------
 //
 //
@@ -548,7 +532,8 @@ function getFixedColName(pageNum, varIndex) {
 // -----------------------------------------------------------------------
 function getColName(pageNum, varIndex) {
 
-    return    ((wholeDb.table_pages[pageNum].col_defns[varIndex].fixedLength?"FIXED_":"VAR_") + (wholeDb.table_pages[pageNum].col_defns[varIndex].name)).padEnd(25, ' ')
+    return    ( (wholeDb.table_pages[pageNum].col_defns[varIndex].name) +
+                    (wholeDb.table_pages[pageNum].col_defns[varIndex].fixedLength?" (fixed)":" (var)") ).padEnd(25, ' ')
     //return varIndex
 }
 
