@@ -456,7 +456,7 @@ function getTableDefinitionForPage(pageNum) {
         let VariableColumnNumber = getVar({length: 2,name: "Variable Column Number",type: "number"})
         let ColumnIndex = getVar({length: 2,name: "Column Index",type: "number"})
         getVar({useJetVersion: 4,length: 4,name: "Various" })
-        let ColFlags = getVar({useJetVersion: 4,length: 2,name: "Col Flags"})
+        let ColFlags = getVar({useJetVersion: 4,length: 1,name: "Col Flags"})
         let fixedLength = false
         if (ColFlags[0] & 0x01) {
             fixedLength = true
@@ -473,6 +473,7 @@ function getTableDefinitionForPage(pageNum) {
         if (ColFlags[0] & 0x04 ) {
             autonumber = true
         }
+        getVar({useJetVersion: 4,length: 1,name: "Col Flags2"})
 
         getVar({useJetVersion: 4,length: 4,name: "Unknown"})
         let FixedOffset = getVar({length: 2,name: "Fixed offset",type: "number"})
@@ -485,7 +486,7 @@ function getTableDefinitionForPage(pageNum) {
         newColumn.fixedLength = fixedLength
         newColumn.canBeNull = canBeNull
         newColumn.autonumber = autonumber
-        newColumn.ColFlags = "0x" + ColFlags[1].toString(16) + ":0x" + ColFlags[0].toString(16)
+        newColumn.ColFlags = "0x" + ":0x" + ColFlags[0].toString(16)
 
         //columns[ColID] = newColumn
         columns[x] = newColumn
