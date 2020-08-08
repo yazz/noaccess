@@ -733,6 +733,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                 let maskedFields = {}
                 let notNullVarList = []
+                let notNullVarListFieldOffset = []
 
                 for (   let recIndex = 0;
                         recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount;
@@ -747,6 +748,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                             let notNullVarName
                             notNullVarName = wholeDb.table_pages[pageNum].col_defns[realColId].name
                             notNullVarList.push(notNullVarName)
+                            notNullVarListFieldOffset.push(realColId)
 
                         }
                     } else {
@@ -823,8 +825,15 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     } else {
                         let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,
                             name: "VariableLengthFieldOffset"})
-//
-                        tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
+                        //
+                        let fieldDefnIndex = notNullVarListFieldOffset[varIndex]
+                        let fieldDefn = wholeDb.table_pages[pageNum].col_defns[fieldDefnIndex]
+                        //if wholeDb.table_pages[pageNum].col_defns[varIndex].UnicodeFlag
+                        if (fieldDefn.UnicodeFlag == 0x01) {
+                            tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
+                        } else {
+                            tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
+                        }
                     }
                 }
                 tableRecord.meta = null
