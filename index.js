@@ -3,7 +3,7 @@ exports.load = function(fileName) {
 console.log("Load Access file: " + fileName);
 
 //2,4, 5, 18, 42
-let defnPage            = 2
+let defnPage            = 81
 let headerJetVersion    = 4
 var fs                  = require("fs");
 let showDebug           = false
@@ -618,7 +618,7 @@ function toUTF8Array(input) {
 function populateDataForTableDefinedOnPage(  pageNum  ) {
 
     let tableData          = []                                        // list of rows of data
-    let table_pages        = wholeDb.table_pages[pageNum]              // table definitions
+    let table_pages        = wholeDb.table_pages[ pageNum ]              // table definitions
 
     //
     // find all the data pages for this table. stored in
@@ -626,7 +626,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
     //
     for (   let dataPageIndex = 0;   dataPageIndex < table_pages.data_pages.length;   dataPageIndex++   ) {
 
-        let dataPageNum = table_pages.data_pages[dataPageIndex].pagenum
+        let dataPageNum = table_pages.data_pages[ dataPageIndex ].pagenum
         tempoffset = 4096 * dataPageNum
 
         let DataPageSignature = getVar({length:   1,name:    "DataPageSignature",type:    "number"})
@@ -695,6 +695,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
         for (let record_index = 0;record_index < RecordCount; record_index ++) {
             tableRecord = {
                 meta: {
+                    data_page: dataPageNum
                 }
                 ,
                 data: {
