@@ -707,7 +707,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                        type: "number"
                     })
 
-                    tableRecord.data[fixedColDefn.name] = colVal
+                    tableRecord.data[fixedColDefn.name.padEnd(25, ' ')] = colVal
 //zzz
 
                 }
@@ -730,6 +730,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                 })
 
                 let maskedFields = {}
+                let notNullVarList = []
 
                 for (   let recIndex = 0;
                         recIndex < wholeDb.table_pages[pageNum].definition.TotalColumnCount;
@@ -740,6 +741,12 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                     let maskBit = Math.pow(2, recIndex)
                     if (FieldMask & maskBit) {
                         maskedFields[getColName(pageNum,realColId)] = ""
+                        if (!wholeDb.table_pages[pageNum].col_defns[realColId].fixedLength) {
+                            let notNullVarName
+                            notNullVarName = wholeDb.table_pages[pageNum].col_defns[realColId].name
+                            notNullVarList.push(notNullVarName)
+
+                        }
                     } else {
                         maskedFields[getColName(pageNum,realColId)] = "null"
                     }
@@ -795,13 +802,23 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                 for (let varIndex=0; varIndex < listOfOffsets.length;varIndex++){
 
                     tempoffset = listOfOffsets[varIndex].start
+
+                    let varName = notNullVarList[varIndex]
+                    if (varName) {
+                            varName = varName.padEnd(25, ' ')
+                    }
+
                     if (listOfOffsets[varIndex].length  == 2) {
-                        let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,name: "VariableLengthFieldOffset",type:"number"})
-                        tableRecord.data[getColName(pageNum, varIndex)] = VariableLengthFieldOffset
+                        let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,
+                            name: "VariableLengthFieldOffset",type:"number"})
+
+                        tableRecord.data[varName] = VariableLengthFieldOffset
 
                     } else {
-                        let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,name: "VariableLengthFieldOffset"})
-                        tableRecord.data[getColName(pageNum, varIndex)] = toUTF8Array(VariableLengthFieldOffset)
+                        let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,
+                            name: "VariableLengthFieldOffset"})
+//
+                        tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
                     }
                 }
             }
