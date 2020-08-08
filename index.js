@@ -473,7 +473,7 @@ function getTableDefinitionForPage(pageNum) {
         if (ColFlags[0] & 0x04 ) {
             autonumber = true
         }
-        getVar({useJetVersion: 4,length: 1,name: "Col Flags2"})
+        let UnicodeFlag = getVar({useJetVersion: 4,length: 1,name: "Col Flags2"})
 
         getVar({useJetVersion: 4,length: 4,name: "Unknown"})
         let FixedOffset = getVar({length: 2,name: "Fixed offset",type: "number"})
@@ -487,6 +487,7 @@ function getTableDefinitionForPage(pageNum) {
         newColumn.canBeNull = canBeNull
         newColumn.autonumber = autonumber
         newColumn.ColFlags = "0x" + ":0x" + ColFlags[0].toString(16)
+        newColumn.UnicodeFlag = "0x" + ":0x" + UnicodeFlag[0].toString(16)
 
         //columns[ColID] = newColumn
         columns[x] = newColumn
