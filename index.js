@@ -1,9 +1,18 @@
-exports.load = function(fileName) {
+
+exports.load = function(options) {
+let defnPage            = 42//2//75//81
+let fileName = options.fileName
+let useCatalog = options.useCatalog
+if (!useCatalog) {
+    defnPage = 2
+}
+if (!useCatalog) {
+    defnPage = 2
+}
 
 console.log("Load Access file: " + fileName);
 
 //2,4, 5, 18, 42
-let defnPage            = 42//2//75//81
 let headerJetVersion    = 4
 var fs                  = require("fs");
 let showDebug           = false
