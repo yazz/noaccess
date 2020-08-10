@@ -823,15 +823,19 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         tableRecord.data[varName] = VariableLengthFieldOffset
 
                     } else {
-                        let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,
-                            name: "VariableLengthFieldOffset"})
                         //
                         let fieldDefnIndex = notNullVarListFieldOffset[varIndex]
                         let fieldDefn = wholeDb.table_pages[pageNum].col_defns[fieldDefnIndex]
                         //if wholeDb.table_pages[pageNum].col_defns[varIndex].UnicodeFlag
                         if (fieldDefn.UnicodeFlag == "1") {
+                            let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length  ,
+                                name: "VariableLengthFieldOffset"})
+                            let lelll1 = getVar({length: 1,name: "len", type: "number"})
+                            let lelll2 = getVar({length: 1,name: "len", type: "number"})
                             tableRecord.data[varName] = ("" + VariableLengthFieldOffset).substring(2)
                         } else {
+                            let VariableLengthFieldOffset = getVar({length: listOfOffsets[varIndex].length ,
+                                name: "VariableLengthFieldOffset"})
                             tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
                         }
                     }
