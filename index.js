@@ -1,14 +1,15 @@
 
 exports.load = function(options) {
-let defnPage            = 42//2//75//81
+let defnPage            = 2//2//75//81
 let fileName = options.fileName
 let useCatalog = options.useCatalog
-if (!useCatalog) {
+if (options.usePage) {
+    defnPage = parseInt(options.usePage)
+} else if (!useCatalog) {
     defnPage = 2
-}
-if (!useCatalog) {
-    defnPage = 2
-}
+} 
+
+
 
 console.log("Load Access file: " + fileName);
 
