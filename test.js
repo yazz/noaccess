@@ -11,12 +11,13 @@ let rtv = noaccess.load("./a.accdb")
 console.log(JSON.stringify(rtv,null,2))
 
 let rtv2 = []
+let colNames = Object.keys(rtv.table_pages[42].columnNames)
+rtv2.push(colNames)
 for (let row=0; row < rtv.table_pages[42].data.length; row++) {
     let rowData = rtv.table_pages[42].data[row].data
     let outputCols = []
     console.log(JSON.stringify(row,null,2))
 
-    let colNames = Object.keys(rtv.table_pages[42].columnNames)
     for (let OutIn=0;OutIn<colNames.length;OutIn++) {
         let colName = colNames[OutIn]
         console.log(JSON.stringify(colName,null,2))
