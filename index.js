@@ -830,7 +830,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         let fieldDefn = wholeDb.table_pages[pageNum].col_defns[fieldDefnIndex]
                         //if wholeDb.table_pages[pageNum].col_defns[varIndex].UnicodeFlag
                         if (fieldDefn.UnicodeFlag == "1") {
-                            tableRecord.data[varName] = "" + VariableLengthFieldOffset
+                            tableRecord.data[varName] = ("" + VariableLengthFieldOffset).substring(2)
                         } else {
                             tableRecord.data[varName] = toUTF8Array(VariableLengthFieldOffset)
                         }
