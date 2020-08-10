@@ -535,7 +535,7 @@ function getTableDefinitionForPage(pageNum) {
 function getColName(pageNum, varIndex) {
 
     return    ( (wholeDb.table_pages[pageNum].col_defns[varIndex].name) +
-                    (wholeDb.table_pages[pageNum].col_defns[varIndex].fixedLength?" (fixed)":" (var)") ).padEnd(25, ' ')
+                    (wholeDb.table_pages[pageNum].col_defns[varIndex].fixedLength?" (fixed)":" (var)") )
     //return varIndex
 }
 
@@ -709,7 +709,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                        type: "number"
                     })
 
-                    tableRecord.data[fixedColDefn.name.padEnd(25, ' ')] = colVal
+                    tableRecord.data[fixedColDefn.name] = colVal
 //zzz
 
                 }
@@ -756,7 +756,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
                         let notNullVarName
                         notNullVarName = wholeDb.table_pages[pageNum].col_defns[realColId].name
                         notNullVarList.push(notNullVarName)
-                        tableRecord.data[notNullVarName.padEnd(25, ' ')] = null
+                        tableRecord.data[notNullVarName] = null
                     }
                 }
                 tableRecord.meta.__var_count = VarLenCount
@@ -813,7 +813,7 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
                     let varName = notNullVarList[varIndex]
                     if (varName) {
-                            varName = varName.padEnd(25, ' ')
+                            varName = varName
                     }
 
                     if (listOfOffsets[varIndex].length  == 2) {
