@@ -13,6 +13,19 @@ var noaccess = require("./index.js");
 
 function showPageNo(usePage)
 {
+    let ret = genData(usePage)
+    console.log(table(ret))
+}
+
+function getRawData(usePage)
+{
+    let ret = genData(usePage)
+    console.log(table(ret))
+}
+
+
+function genData(usePage)
+{
     let rtv = noaccess.load({
         fileName:   "./a.accdb",
         usePage:     usePage
@@ -47,8 +60,10 @@ function showPageNo(usePage)
         }
         rtv2.push(outputCols)
 
-        console.log(table(rtv2))
+
+
     }
+    return rtv2
 
 }
 
