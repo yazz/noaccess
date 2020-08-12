@@ -7,7 +7,7 @@ if (options.usePage) {
     defnPage = parseInt(options.usePage)
 } else if (!useCatalog) {
     defnPage = 2
-} 
+}
 
 
 
@@ -16,6 +16,7 @@ console.log("Load Access file: " + fileName);
 //2,4, 5, 18, 42
 let headerJetVersion    = 4
 var fs                  = require("fs");
+const {table} = require('table');
 let showDebug           = false
 let dbFileName          = fileName
 var offset              = 0
@@ -46,7 +47,15 @@ populateDataForTableDefinedOnPage(defnPage)
 
 
 
-return  wholeDb
+//return  wholeDb
+let result
+if (options.showTable) {
+    result = table(genData(defnPage))
+} else {
+
+}
+
+return  result
 
 
 
@@ -863,6 +872,45 @@ function populateDataForTableDefinedOnPage(  pageNum  ) {
 
 
 
+
+function genData(usePage)
+{
+    let rtv2 = []
+    let colNames = Object.keys(wholeDb.table_pages[usePage].columnNames)
+    rtv2.push(colNames)
+    for (let row=0; row < wholeDb.table_pages[usePage].data.length; row++) {
+        let rowData = wholeDb.table_pages[usePage].data[row].data
+        let outputCols = []
+        //console.log(JSON.stringify(row,null,2))
+
+        for (let OutIn=0;OutIn<colNames.length;OutIn++) {
+            let colName = colNames[OutIn]
+            //console.log(JSON.stringify(colName,null,2))
+            //console.log(JSON.stringify(rowData,null,2))
+            let rowDataItem = rowData[colName]
+            if (rowData) {
+                rowDataItem = JSON.stringify(rowDataItem,null,2)
+                try {
+                    rowDataItem = rowDataItem.replace(/[\x00-\x1F\x7F-\x9F]/g, "");
+                } catch(err ){
+                    rowDataItem =  "."//err
+                }
+
+
+                outputCols.push(rowDataItem)
+            } else {
+                outputCols.push("null")
+            }
+
+        }
+        rtv2.push(outputCols)
+
+
+
+    }
+    return rtv2
+
+}
 
 
 
