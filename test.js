@@ -36,9 +36,9 @@ function getRawData(usePage)
 
 
 if (process.argv[2]) {
-    showPageNo(process.argv[2])
+    getRawData(process.argv[2])
 
 } else {
-    showPageNo(2)
+    getRawData(2)
 
 }
