@@ -1,9 +1,26 @@
+let fs                  = require("fs");
+const {table}           = require('table');
+
+let defnPage            = 2//2//75//81
+//2,4, 5, 18, 42
+let headerJetVersion    = 4
+
+let showDebug           = false
+var offset              = 0
+var tempoffset
+
+let wholeDb             = {}
+
+
+
+
 
 exports.load = function(options) {
-    let fs                  = require("fs");
-
-    let defnPage            = 2//2//75//81
     let fileName = options.fileName
+    let dbFileName          = fileName
+    var stats               = fs.statSync(dbFileName)
+    var fileSizeInBytes     = stats["size"]
+    let numPages            = (fileSizeInBytes / 4096) + 1
     let useCatalog = options.useCatalog
     if (options.usePage) {
         defnPage = parseInt(options.usePage)
@@ -13,21 +30,9 @@ exports.load = function(options) {
 
 
 
+
 console.log("Load Access file: " + fileName);
 
-//2,4, 5, 18, 42
-let headerJetVersion    = 4
-
-const {table} = require('table');
-let showDebug           = false
-let dbFileName          = fileName
-var offset              = 0
-var tempoffset
-var stats               = fs.statSync(dbFileName)
-var fileSizeInBytes     = stats["size"]
-let numPages            = (fileSizeInBytes / 4096) + 1
-
-let wholeDb             = {}
 
 if (showDebug) {
     console.log("fileSizeInBytes: " + fileSizeInBytes )
