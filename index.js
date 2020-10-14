@@ -1,13 +1,15 @@
 
 exports.load = function(options) {
-let defnPage            = 2//2//75//81
-let fileName = options.fileName
-let useCatalog = options.useCatalog
-if (options.usePage) {
-    defnPage = parseInt(options.usePage)
-} else if (!useCatalog) {
-    defnPage = 2
-}
+    let fs                  = require("fs");
+
+    let defnPage            = 2//2//75//81
+    let fileName = options.fileName
+    let useCatalog = options.useCatalog
+    if (options.usePage) {
+        defnPage = parseInt(options.usePage)
+    } else if (!useCatalog) {
+        defnPage = 2
+    }
 
 
 
@@ -15,7 +17,7 @@ console.log("Load Access file: " + fileName);
 
 //2,4, 5, 18, 42
 let headerJetVersion    = 4
-var fs                  = require("fs");
+
 const {table} = require('table');
 let showDebug           = false
 let dbFileName          = fileName
