@@ -1,14 +1,10 @@
 let fs                  = require("fs");
 const {table}           = require('table');
-
-let defnPage            = 2//2//75//81
-//2,4, 5, 18, 42
+let defnPage            = 2//2//75//81   //2,4, 5, 18, 42
 let headerJetVersion    = 4
-
 let showDebug           = false
 var offset              = 0
 var tempoffset
-
 let wholeDb             = {}
 
 
@@ -16,29 +12,34 @@ let wholeDb             = {}
 
 
 exports.load = function(options) {
-    let fileName = options.fileName
-    let dbFileName          = fileName
+    let dbFileName          = options.fileName
     var stats               = fs.statSync(dbFileName)
     var fileSizeInBytes     = stats["size"]
     let numPages            = (fileSizeInBytes / 4096) + 1
-    let useCatalog = options.useCatalog
+    let useCatalog          = options.useCatalog
+
     if (options.usePage) {
         defnPage = parseInt(options.usePage)
     } else if (!useCatalog) {
         defnPage = 2
     }
 
+    if (options.showDebug) {
+        showDebug = options.showDebug
+    }
 
 
 
-console.log("Load Access file: " + fileName);
 
 
-if (showDebug) {
-    console.log("fileSizeInBytes: " + fileSizeInBytes )
-    console.log("")
-    console.log("")
-}
+
+    if (showDebug) {
+        console.log("Load Access file: " + dbFileName);
+
+        console.log("fileSizeInBytes: " + fileSizeInBytes )
+        console.log("")
+        console.log("")
+    }
 
 var binary              = fs.readFileSync(dbFileName);
 
