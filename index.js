@@ -6,7 +6,8 @@ let showDebug           = false
 var offset              = 0
 var tempoffset
 let wholeDb             = {}
-
+let numPages            = null
+let binary              = null
 
 
 
@@ -15,7 +16,7 @@ exports.load = function(options) {
     let dbFileName          = options.fileName
     var stats               = fs.statSync(dbFileName)
     var fileSizeInBytes     = stats["size"]
-    let numPages            = (fileSizeInBytes / 4096) + 1
+    numPages                = (fileSizeInBytes / 4096) + 1
     let useCatalog          = options.useCatalog
 
     if (options.usePage) {
@@ -41,29 +42,39 @@ exports.load = function(options) {
         console.log("")
     }
 
-var binary              = fs.readFileSync(dbFileName);
+    binary              = fs.readFileSync(dbFileName);
 
 
 
-//
-// do stuff with the functions
-//
+    //
+    // do stuff with the functions
+    //
 
-findDataPages()
-getTableDefinitionForPage(defnPage)
-populateDataForTableDefinedOnPage(defnPage)
+    findDataPages()
+    getTableDefinitionForPage(defnPage)
+    populateDataForTableDefinedOnPage(defnPage)
 
 
 
-//return  wholeDb
-let result
-if (options.showTable) {
-    result = table(genData(defnPage))
-} else {
-    result = createData(defnPage)
+    //return  wholeDb
+    let result
+    if (options.showTable) {
+        result = table(genData(defnPage))
+    } else {
+        result = createData(defnPage)
+    }
+
+    return  result
 }
 
-return  result
+
+
+
+
+
+
+
+
 
 
 
@@ -962,9 +973,5 @@ function createData(usePage)
 
     }
     return rtv2
-
-}
-
-
 
 }
