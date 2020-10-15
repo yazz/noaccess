@@ -12,6 +12,16 @@ let binary              = null
 
 
 
+
+
+
+
+// -----------------------------------------------------------------------
+//                       load(  MS ACCESS FILE NAME  )
+//
+//   This kicks things off by loading the database schema into memory
+//
+// -----------------------------------------------------------------------
 exports.load = function(options) {
     let dbFileName          = options.fileName
     var stats               = fs.statSync(dbFileName)
@@ -64,7 +74,15 @@ exports.load = function(options) {
         result = createData(defnPage)
     }
 
-    return  result
+    let schemaList = []
+    for (let xx=0;xx<wholeDb.table_pages[2].data.length ; xx++){
+        if (wholeDb.table_pages[2].data[xx].data) {
+            if (wholeDb.table_pages[2].data[xx].data.Name) {
+                schemaList.push(wholeDb.table_pages[2].data[xx].data.Name)
+            }
+        }
+    }
+    return  schemaList
 }
 
 

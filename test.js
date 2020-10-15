@@ -10,4 +10,4 @@ let ret = noaccess.load({
         fileName:   "./a.accdb"
     })
 
-console.log(ret)
+console.log(JSON.stringify(ret,null,2))
