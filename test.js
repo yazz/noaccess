@@ -6,8 +6,7 @@ const {table} = require('table');
 var noaccess = require("./index.js");
 
 
-let ret = noaccess.load({
-        fileName:   "./a.accdb"
-    })
+noaccess.load({fileName:   "./a.accdb"})
+let ret = noaccess.getTables()
 
 console.log(JSON.stringify(ret,null,2))

@@ -74,6 +74,15 @@ exports.load = function(options) {
         result = createData(defnPage)
     }
 
+    return {loaded: true}
+
+
+}
+
+
+
+
+exports.getTables = function() {
     let schemaList = []
     for (let xx=0;xx<wholeDb.table_pages[2].data.length ; xx++){
         if (wholeDb.table_pages[2].data[xx].data) {
@@ -84,12 +93,6 @@ exports.load = function(options) {
     }
     return  schemaList
 }
-
-
-
-
-
-
 
 
 
