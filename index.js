@@ -65,9 +65,12 @@ exports.load = function(options) {
     getTableDefinitionForPage(defnPage)
     populateDataForTableDefinedOnPage(defnPage)
 
+    let tableD = this.getTableDataForPage(2)
 
+    for (let fg=0; fg<tableD.length;fg++){
+        tablesToPageNums[ tableD[fg].Name ] = tableD[fg].Id
+    }
 
-tablesToPageNums={a: 1}
 
 
     //return  wholeDb
@@ -86,6 +89,17 @@ tablesToPageNums={a: 1}
 exports.getWholeDb = function() {
     return wholeDb
 }
+
+
+
+
+
+exports.getTablePages = function(colName) {
+    return tablesToPageNums
+}
+
+
+
 
 
 exports.getColumns = function(colName) {
