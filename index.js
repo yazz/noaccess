@@ -124,6 +124,12 @@ exports.getTables = function() {
 
 
 
+exports.getTableData = function(tableName) {
+    return this.getTableDataForPage(tablesToPageNums[tableName])
+}
+
+
+
 exports.getTableDataForPage = function(localPageNum) {
     let tableData = []
 
