@@ -102,9 +102,9 @@ exports.getTablePages = function(colName) {
 
 
 
-exports.getColumns = function(colName) {
-    getTableDefinitionForPage(42)
-    return tablesToPageNums
+exports.getColumns = function(tableName) {
+    getTableDefinitionForPage(tablesToPageNums[tableName])
+    return Object.keys(wholeDb.table_pages[tablesToPageNums[tableName]].columnNames)
 }
 
 
