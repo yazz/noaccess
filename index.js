@@ -8,6 +8,7 @@ var tempoffset
 let wholeDb             = {}
 let numPages            = null
 let binary              = null
+let tablesToPageNums    = {}
 
 
 
@@ -66,6 +67,9 @@ exports.load = function(options) {
 
 
 
+tablesToPageNums={a: 1}
+
+
     //return  wholeDb
     let result
     if (options.showTable) {
@@ -79,7 +83,15 @@ exports.load = function(options) {
 
 }
 
+exports.getWholeDb = function() {
+    return wholeDb
+}
 
+
+exports.getColumns = function(colName) {
+    getTableDefinitionForPage(42)
+    return tablesToPageNums
+}
 
 
 exports.getTables = function() {
@@ -94,6 +106,22 @@ exports.getTables = function() {
     return  schemaList
 }
 
+
+
+
+
+exports.getTableDataForPage = function(localPageNum) {
+    let tableData = []
+
+    for (let xx=0;xx<wholeDb.table_pages[localPageNum].data.length ; xx++){
+        let rowData = {}
+        if (wholeDb.table_pages[localPageNum].data[xx].data) {
+            rowData = wholeDb.table_pages[localPageNum].data[xx].data
+            tableData.push(rowData)
+        }
+    }
+    return  tableData
+}
 
 
 
