@@ -114,7 +114,10 @@ exports.getTableDataForPage = function(localPageNum) {
     let tableData = []
 
     if (!wholeDb.table_pages[localPageNum].data) {
+        console.log("Populate data for page: " + localPageNum)
+        getTableDefinitionForPage(localPageNum)
         populateDataForTableDefinedOnPage(localPageNum)
+        console.log("Populate data for page: " + localPageNum + " done.")
     }
 
     for (let xx=0;xx<wholeDb.table_pages[localPageNum].data.length ; xx++){
