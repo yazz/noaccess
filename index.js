@@ -113,11 +113,17 @@ exports.getTables = function() {
 exports.getTableDataForPage = function(localPageNum) {
     let tableData = []
 
+    if (!wholeDb.table_pages[localPageNum].data) {
+        populateDataForTableDefinedOnPage(localPageNum)
+    }
+
     for (let xx=0;xx<wholeDb.table_pages[localPageNum].data.length ; xx++){
         let rowData = {}
         if (wholeDb.table_pages[localPageNum].data[xx].data) {
             rowData = wholeDb.table_pages[localPageNum].data[xx].data
-            tableData.push(rowData)
+            if (rowData && (Object.keys(rowData).length > 0)) {
+                tableData.push(rowData)
+            }
         }
     }
     return  tableData
