@@ -11,8 +11,6 @@ let ret = noaccess.getTables()
 
 
 
-//let tableData = noaccess.getTableData("CustomerT")
-//console.log(JSON.stringify(tableData,null,2))
 
 //let tablePages = noaccess.getTablePages()
 //console.log("Table pages: " + JSON.stringify(tablePages,null,2))
@@ -21,3 +19,7 @@ let ret = noaccess.getTables()
 
 let cols = noaccess.getColumns("CustomerT")
 console.log(JSON.stringify(cols,null,2))
+
+
+let tableData = noaccess.getTableData("CustomerT")
+console.log(JSON.stringify(tableData,null,2))
