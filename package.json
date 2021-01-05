@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zubairq/noaccess.git"
+    "url": "https://github.com/yazz/noaccess.git"
   },
   "dependencies": {
     "table": "^5.4.6"
